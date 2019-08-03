@@ -60,6 +60,7 @@ public class Test_AddLock extends AppCompatActivity implements FireBase.FindLock
                     intent.putExtra("lockName", lock.name);
                     startActivity(intent);
                     finish();
+
                 } else
                     FireBase.searchGeneralLock(str, Test_AddLock.this);
             }
