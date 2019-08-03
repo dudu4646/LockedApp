@@ -1,30 +1,23 @@
 package packet.com.lockedappproject.Activities;
 
 import android.graphics.Typeface;
-import android.media.Image;
 import android.os.Bundle;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.appcompat.app.AppCompatActivity;
-import android.util.Log;
+
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import packet.com.lockedappproject.R;
-import packet.com.lockedappproject.models.FireBase;
-import packet.com.lockedappproject.models.Lock;
 
 public class DialogActivity extends AppCompatActivity {
 
     private Button ok,cancel;
-    private ConstraintLayout takenLayout,foundLayout;
+    private ConstraintLayout takenLayout,foundLayout,newLockLayout;
     private TextView header;
     private ImageView img;
 
@@ -46,6 +39,7 @@ public class DialogActivity extends AppCompatActivity {
         //ConstraintLayout
         takenLayout = findViewById(R.id.takenLayout);
         foundLayout = findViewById(R.id.foundLayout);
+        newLockLayout = findViewById(R.id.newLockLayout);
         //TextView
         header = findViewById(R.id.header);
         //ImageView
@@ -65,7 +59,7 @@ public class DialogActivity extends AppCompatActivity {
                 houseName.setTypeface(Typeface.DEFAULT_BOLD);
                 TextView msg2 = findViewById(R.id.msg2);
                 msg2.setText(R.string.lockexistsP2);
-                TextView lockName = findViewById(R.id.lockName);
+                TextView lockName = findViewById(R.id.newLock);
                 lockName.setTypeface(Typeface.DEFAULT_BOLD);
                 lockName.setText(getIntent().getStringExtra("lockName"));
                 cancel.setVisibility(View.GONE);
@@ -101,6 +95,7 @@ public class DialogActivity extends AppCompatActivity {
             case 3:
                 header.setText("Add lock");
                 img.setImageResource(R.drawable.add);
+                newLockLayout.setVisibility(View.VISIBLE);
 
         }
     }

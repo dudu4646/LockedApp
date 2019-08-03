@@ -60,14 +60,14 @@ public class Test_AddLock extends AppCompatActivity implements FireBase.FindLock
                     intent.putExtra("lockName", lock.name);
                     startActivity(intent);
                     finish();
-                }
-                FireBase.searchGeneralLock(str, Test_AddLock.this);
+                } else
+                    FireBase.searchGeneralLock(str, Test_AddLock.this);
             }
         });
     }
 
     @Override
-    public void found(House house,Lock lock) {
+    public void found(House house, Lock lock) {
         Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
         intent.putExtra("status", 2);
         intent.putExtra("houseName", house.name);

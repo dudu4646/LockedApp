@@ -88,7 +88,7 @@ public class LockCard extends RecyclerView.Adapter<LockCard.CardLockHolder> impl
 
         public CardLockHolder(@NonNull View itemView) {
             super(itemView);
-            name = itemView.findViewById(R.id.name);
+            name = itemView.findViewById(R.id.newLock);
             img = itemView.findViewById(R.id.img);
         }
     }
