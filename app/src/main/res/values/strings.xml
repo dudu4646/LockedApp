@@ -14,4 +14,10 @@
                                 And needs to be released first</string>
     <string name="generalLockAlert">One or more locks ard locked by admin,\nAnd needs to be released first</string>
     <string name="missingAdminPer">You\'re missing admins permission,\nFor one or more locks</string>
+    <string name="lockexistsP1">You\'re already signed to this lock\n
+                              Is in house: </string>
+    <string name="lockexistsP2">name:</string>
+    <string name="exists1">This lock already found in house: </string>
+    <string name="exists2">Called: </string>
+    <string name="sendReuest">Send requests to all the Admins?</string>
 </resources>

@@ -23,12 +23,12 @@
         android:hint="Insert Lock ID"
         android:inputType="textPersonName"
         android:textAlignment="center"
-        app:layout_constraintBaseline_toBaselineOf="@+id/serch"
+        app:layout_constraintBaseline_toBaselineOf="@+id/search"
         app:layout_constraintEnd_toStartOf="@+id/guideline11"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/serch"
+        android:id="@+id/search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -36,8 +36,9 @@
         android:layout_marginEnd="16dp"
         android:enabled="false"
         android:saveEnabled="false"
-        android:text="Serch"
+        android:text="Search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline11"
         app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

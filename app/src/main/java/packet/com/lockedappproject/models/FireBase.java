@@ -1,9 +1,6 @@
 package packet.com.lockedappproject.models;
 
 import android.app.Activity;
-import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,14 +14,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
+
 
 public class FireBase {
 
@@ -168,22 +165,22 @@ public class FireBase {
     };
 
     //GETTERS:
-        //get current user
+    //get current user
     public static User getUser() {
         return user;
     }
 
-        //get user ID
+    //get user ID
     public static String getUid() {
         return mAuth.getUid();
     }
 
-        //get all the user houses
+    //get all the user houses
     public static ArrayList<House> getHouses() {
         return userHouses;
     }
 
-        //get locks from single house
+    //get locks from single house
     public static ArrayList<Lock> getLockFromList(String list) {
         String[] locks = list.split(",");
         ArrayList<Lock> arr = new ArrayList<>();
@@ -198,7 +195,7 @@ public class FireBase {
         return arr;
     }
 
-        //get single house
+    //get single house
     public static House getOneHouse(String id) {
         for (House h : userHouses)
             if (h.id.equalsIgnoreCase(id))
@@ -206,15 +203,24 @@ public class FireBase {
         return null;
     }
 
-        //get lock from list by name/id
-    public static Lock getLockByStr(String str){
-        for (Lock lock:userLocks)
+
+    //get single house by lock
+    public static House getHousebyLock(String str) {
+        for (House h : userHouses)
+            if (h.locks.contains(str))
+                return h;
+        return null;
+    }
+
+    //get lock from list by name/id
+    public static Lock getLockByStr(String str) {
+        for (Lock lock : userLocks)
             if (lock.name.equalsIgnoreCase(str) || (lock.id.equalsIgnoreCase(str)))
                 return lock;
         return null;
     }
 
-        //get user email from nick
+    //get user email from nick
     public static String getEmailFromNick(String nick) {
         if (nicks.containsKey(nick))
             return nicks.get(nick);
@@ -261,7 +267,7 @@ public class FireBase {
 
     }
 
-    //download all the users nicks
+        //download all the users nicks
     public static void getNicks() {
         nicks = new HashMap<>();
         ref = db.getReference("users");
@@ -331,176 +337,6 @@ public class FireBase {
             updateLocks.remove(adapter);
     }
 
-        //checking if lock exists in the DB
-    public static void lookForLock(final String id, final LookForLock callback) {
-        lockRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int i = 0;
-                boolean exists = false;
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if (snapshot.getKey().equalsIgnoreCase(id)) {
-                        Lock lock = snapshot.getValue(Lock.class);
-                        //extracting the users name from the DB
-                        getUsersNicks(lock.id, lock.admin, callback);
-                        exists = true;
-                    }
-                    i++;
-                }
-                if (i == dataSnapshot.getChildrenCount() && !exists)
-                    callback.lockDoesntExists();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-        //deleting lock
-    public static void deleteLock(final Lock lock, String newAdmin) {
-        ArrayList<String> locks = new ArrayList<>(Arrays.asList(user.lockList.split(",")));
-        locks.remove(lock.id);
-        String s = "";
-        for (int i = 0; i < locks.size(); i++) {
-            if (i == 0)
-                s = locks.get(0);
-            else
-                s += "," + locks.get(i);
-        }
-        user.lockList = s;
-        ref = db.getReference("users").child(getUid());
-        ref.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                removeLockFromHouse(lock);
-            }
-        });
-    }
-
-        //deleting user from the lock users
-    private static void removeUserFromLock(Lock lock) {
-        ref = db.getReference("locks").child(lock.id);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Lock lock = dataSnapshot.getValue(Lock.class);
-                if (lock.admin.contains(mAuth.getUid())) {
-                    ArrayList<String> temp = new ArrayList<>(Arrays.asList(lock.admin.split(",")));
-                    temp.remove(mAuth.getUid());
-                    String s = "";
-                    for (int i = 0; i < temp.size(); i++)
-                        if (i == 0)
-                            s = temp.get(0);
-                        else
-                            s += "," + temp.get(i);
-                    lock.admin = s;
-                }
-                if (lock.notAdmin.contains(mAuth.getUid())) {
-                    ArrayList<String> temp = new ArrayList<>(Arrays.asList(lock.notAdmin.split(",")));
-                    temp.remove(mAuth.getUid());
-                    String s = "";
-                    for (int i = 0; i < temp.size(); i++)
-                        if (i == 0)
-                            s = temp.get(0);
-                        else
-                            s += "," + temp.get(i);
-                    lock.notAdmin = s;
-                }
-                if (lock.admin.length() == 0 && lock.notAdmin.length() == 0)
-                    ref.removeValue();
-                else
-                    ref.setValue(lock);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
-        //adding new lock
-    public static void addNewLock(final String lId, final String lName, final String h, final UpdateUi callback) {
-
-        ref = db.getReference("users").child(FireBase.getUid());
-        User user = FireBase.getUser();
-        //editing the user
-        ArrayList<String> locks = new ArrayList<>(Arrays.asList(user.lockList.split(",")));
-        locks.add(lId);
-        Collections.sort(locks);
-        String s = "";
-        int i;
-        for (i = 0; i < locks.size(); i++)
-            if (i == 0)
-                s = locks.get(0);
-            else
-                s += "," + locks.get(i);
-        user.lockList = s;
-        //writing the new user data
-        ref.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                //updating the house
-                House house = FireBase.getOneHouse(h);
-                house.locks = add_id_to_string(house.locks, lId);
-                houseRef.child(h).setValue(house).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Lock lock = new Lock(lName, "open", lId, FireBase.getUid(), "");
-                        lockRef.child(lId).setValue(lock).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                callback.Success();
-                            }
-                        });
-                    }
-                });
-            }
-        });
-    }
-
-        //adding new house with new lock
-    public static void add_house_and_lock(final String lockId, final String lockName, final String houseName, final String city, final String street, final Context context, final UpdateUi callack) {
-        final DatabaseReference newRef = houseRef.push();
-        //updating user
-        User user = getUser();
-        user.houseList = add_id_to_string(user.houseList, newRef.getKey());
-        user.lockList = add_id_to_string(user.lockList, lockId);
-        userRef.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                //creating house
-                final House house = new House(houseName, street + ", " + city, lockId, 0, 0, getUid(), newRef.getKey());
-                Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-                List<Address> address = null;
-                try {
-                    address = geocoder.getFromLocationName(street + ", " + city, 1);
-                    house.lat = (float) address.get(0).getLatitude();
-                    house.lot = (float) address.get(0).getLongitude();
-                } catch (Exception e) {
-                    house.lat = 0f;
-                    house.lot = 0f;
-                }
-                newRef.setValue(house).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        //Creating the new lock
-                        Lock lock = new Lock(lockName, "open", lockId, getUid(), "");
-                        lockRef.child(lock.id).setValue(lock).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                callack.Success();
-                            }
-                        });
-                    }
-                });
-            }
-        });
-    }
-
         //changing lock status
     public static void changeLockTo(Lock lock, String status) {
         lock.status = status;
@@ -508,54 +344,31 @@ public class FireBase {
         ref.setValue(lock);
     }
 
-    //PRIVATE METHODS:
-    private static void getUsersNicks(final String id, String uId, final LookForLock callback) {
-        final String arr[] = uId.split(",");
-        final String str[] = {""};
-        final int[] temp = {1};
-        for (String s : arr) {
-            db.getReference("users").child(s).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    User user = dataSnapshot.getValue(User.class);
-                    str[0] += user.nick;
-                    if (temp[0]++ < arr.length)
-                        str[0] += ",";
-
-                    if (temp[0] > arr.length)
-                        callback.lockExists(id, str[0]);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        }
-
-    }
-
-    private static void removeLockFromHouse(final Lock lock) {
-        int i;
-        for (i = 0; i < userHouses.size() && !userHouses.get(i).locks.contains(lock.id); i++) ;
-        final House house = userHouses.get(i);
-        ArrayList<String> locks = new ArrayList<>(Arrays.asList(house.locks.split(",")));
-        locks.remove(lock.id);
-        String temp = "";
-        for (i = 0; i < locks.size(); i++)
-            if (i == 0)
-                temp = locks.get(0);
-            else
-                temp += "," + locks.get(i);
-        house.locks = temp;
-        ref = db.getReference("house").child(house.id);
-        ref.setValue(house).addOnCompleteListener(new OnCompleteListener<Void>() {
+        //looking for specific lock in all DB
+    public static void searchGeneralLock(final String str, final FindLock cb) {
+        houseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                removeUserFromLock(lock);
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean found = false;
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    House house = data.getValue(House.class);
+                    if (house.locks.contains(str)) {
+                        found = true;
+                        findLockinDB(str, house, cb);
+                    }
+                }
+                if (!found)
+                    cb.notFound();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }
+
+    //PRIVATE METHODS:
 
     private static String add_id_to_string(String src, String id) {
         src += (src.length() > 0) ? "," + id : id;
@@ -570,7 +383,26 @@ public class FireBase {
         return s;
     }
 
+    private static void findLockinDB(final String str, final House house, final FindLock cb) {
+        System.out.println("testing --> house = "+house.name+" lock = "+str);
+        lockRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data:dataSnapshot.getChildren()){
+                    Lock lock = data.getValue(Lock.class);
+                    if (lock.id.equalsIgnoreCase(str)) {
+                        cb.found(house, lock);
+                        break;
+                    }
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
 
     //INTERFACES:
@@ -588,10 +420,11 @@ public class FireBase {
         void Notify();
     }
 
-    public interface LookForLock {
-        void lockExists(String id, String str);
+    public interface FindLock {
+        void found(House house, Lock lock);
 
-        void lockDoesntExists();
+        void notFound();
     }
+
 
 }

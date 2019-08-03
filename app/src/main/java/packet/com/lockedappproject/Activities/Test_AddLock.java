@@ -1,19 +1,25 @@
 package packet.com.lockedappproject.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import packet.com.lockedappproject.R;
+import packet.com.lockedappproject.models.FireBase;
+import packet.com.lockedappproject.models.House;
+import packet.com.lockedappproject.models.Lock;
+import packet.com.lockedappproject.models.User;
 
-public class Test_AddLock extends AppCompatActivity {
+public class Test_AddLock extends AppCompatActivity implements FireBase.FindLock {
 
     private EditText lockId;
-    private Button serch;
+    private Button search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +41,47 @@ public class Test_AddLock extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                serch.setEnabled(editable.toString().trim().length()>0);
+                search.setEnabled(editable.toString().trim().length() > 0);
             }
         });
         //Buttons
-        serch=findViewById(R.id.serch);
+        search = findViewById(R.id.search);
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String str = lockId.getText().toString();
+                User user = FireBase.getUser();
+                if (user.lockList.contains(str)) {
+                    Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
+                    House house = FireBase.getHousebyLock(str);
+                    Lock lock = FireBase.getLockByStr(str);
+                    intent.putExtra("status", 1);
+                    intent.putExtra("houseName", house.name);
+                    intent.putExtra("lockName", lock.name);
+                    startActivity(intent);
+                    finish();
+                }
+                FireBase.searchGeneralLock(str, Test_AddLock.this);
+            }
+        });
+    }
 
+    @Override
+    public void found(House house,Lock lock) {
+        Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
+        intent.putExtra("status", 2);
+        intent.putExtra("houseName", house.name);
+        intent.putExtra("lockName", lock.name);
+        intent.putExtra("lockAdmins", lock.admin);
+        startActivity(intent);
+        finish();
+    }
 
+    @Override
+    public void notFound() {
+        Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
+        intent.putExtra("status", 3);
+        startActivity(intent);
+        finish();
     }
 }
