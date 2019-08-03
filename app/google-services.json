@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "488963856224",
+    "firebase_url": "https://lockedappproject.firebaseio.com",
+    "project_id": "lockedappproject",
+    "storage_bucket": "lockedappproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:488963856224:android:2dd4c0bd0c5e0695",
+        "android_client_info": {
+          "package_name": "packet.com.lockedappproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "488963856224-p10n21ck62rat4jk3b6di2skm24rqhlr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "packet.com.lockedappproject",
+            "certificate_hash": "e1ee12852f4b68bdb7fa6ed7cd851bbbf3717b2c"
+          }
+        },
+        {
+          "client_id": "488963856224-mvl7mjqhv8vvl5jg39r71tu111q5i3en.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDR9NMoSjquS5KA9jeYORLZEZMkKTfh3pg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "488963856224-mvl7mjqhv8vvl5jg39r71tu111q5i3en.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

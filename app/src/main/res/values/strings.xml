@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Locked App Project</string>
+    <string name="google_maps_key">AIzaSyDEzwP6S3jnRfsNlNhW2Vb5zz8GrriUHEE</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="dialog_delete_title">Delete </string>
+    <string name="dialog_delete_body">This action can\'t be undone!</string>
+    <string name="dialog_lastUser">Your\'e the last user registered to this lock,\nSigning out, will delete this lock entirely!</string>
+    <string name="dialog_lastAdmin">Your\'e the only Admin of this lock,\n
+                                              Please chooser another user to make as Admin: </string>
+    <string name="lock_exists">This lock already exists,\n
+                                Admin user needs to approved you</string>
+
+    <string name="lockedalert">This lock is locked by Admin,\n
+                                And needs to be released first</string>
+    <string name="generalLockAlert">One or more locks ard locked by admin,\nAnd needs to be released first</string>
+    <string name="missingAdminPer">You\'re missing admins permission,\nFor one or more locks</string>
+</resources>
