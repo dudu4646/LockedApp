@@ -1,11 +1,13 @@
 package packet.com.lockedappproject.Activities;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,7 +28,7 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
 
     private TextView h1, h2, checkNum;
     private RecyclerView lockList;
-    private Button closeAll, openAll, closeAdmin, openAdmin;
+    private ImageView open, close, admin,addImg,dltImg;
     private HouseScreenAdapt adapt;
     private House house;
     private List<Lock> arr;
@@ -51,74 +53,87 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
         lockList.setAdapter(adapt);
         //List<Lock>
         arr = new ArrayList<>();
-        //Button
-        openAll = findViewById(R.id.openAll);
-        openAll.setOnClickListener(new View.OnClickListener() {
+        //ImageView
+        open = findViewById(R.id.opemImg);
+        open.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (arr.size() == 0)
-                    Snackbar.make(view, "Select locks first", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(view, "Choose Lock to open", Snackbar.LENGTH_SHORT);
                 else {
                     boolean flg = false;
-                    for (Lock l : arr)
-                        if (l.status.equalsIgnoreCase("lock"))
-                            flg = false;
-                        else if (l.status.equalsIgnoreCase("close"))
+                    for (Lock l : arr) {
+                        boolean admin = l.admin.contains(FireBase.getUid());
+                        if (l.status.equalsIgnoreCase("close") ||
+                            (l.status.equalsIgnoreCase("lock") && admin))
                             FireBase.changeLockTo(l, "open");
+                        else
+                            flg = (l.status.equalsIgnoreCase("lock") && !admin) || flg;
+                    }
                     if (flg)
                         Snackbar.make(view, R.string.generalLockAlert, Snackbar.LENGTH_LONG).show();
                 }
             }
         });
-        closeAll = findViewById(R.id.closaAll);
-        closeAll.setOnClickListener(new View.OnClickListener() {
+        close = findViewById(R.id.closeImg);
+        close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (arr.size() == 0)
-                    Snackbar.make(view, "Select locks first", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(view, "Choose Lock to open", Snackbar.LENGTH_SHORT);
                 else {
-                    for (Lock l : arr)
-                        if (l.status.equalsIgnoreCase("open"))
-                            FireBase.changeLockTo(l, "close");
-                }
-            }
-        });
-        closeAdmin = findViewById(R.id.closeAdmin);
-        closeAdmin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (arr.size() == 0) {
-                    Snackbar.make(view, "Select locks first", Snackbar.LENGTH_SHORT).show();
-                } else {
                     boolean flg = false;
-                    for (Lock l : arr)
-                        if (l.admin.contains(FireBase.getUid()) && !l.status.equalsIgnoreCase("lock"))
-                            FireBase.changeLockTo(l, "lock");
+                    for (Lock l : arr) {
+                        boolean admin = l.admin.contains(FireBase.getUid());
+                        if ((l.status.equalsIgnoreCase("open")) ||
+                            (l.status.equalsIgnoreCase("lock") && admin))
+                            FireBase.changeLockTo(l, "close");
                         else
-                            flg = (!l.admin.contains(FireBase.getUid()) || flg);
+                            flg = (l.status.equalsIgnoreCase("lock") && !admin) || flg;
+                    }
                     if (flg)
                         Snackbar.make(view, R.string.missingAdminPer, Snackbar.LENGTH_LONG).show();
                 }
             }
         });
-        openAdmin = findViewById(R.id.openAdmin);
-        openAdmin.setOnClickListener(new View.OnClickListener() {
+        admin = findViewById(R.id.adminImg);
+        admin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              if (arr.size()==0)
-                  Snackbar.make(view, "Select locks first", Snackbar.LENGTH_SHORT).show();
-              else{
-                  boolean flg =false;
-                  for (Lock l:arr)
-                      if (l.admin.contains(FireBase.getUid()) && l.status.equalsIgnoreCase("lock"))
-                          FireBase.changeLockTo(l,"open");
-                      else
-                          flg = (!l.admin.contains(FireBase.getUid()) || flg);
-                  if (flg)
-                      Snackbar.make(view, R.string.missingAdminPer, Snackbar.LENGTH_LONG).show();
-              }
+                if (arr.size() == 0)
+                    Snackbar.make(view, "Choose Lock to open", Snackbar.LENGTH_SHORT);
+                else{
+                    boolean flg = false;
+                    for(Lock l:arr) {
+                        boolean admin = l.admin.contains(FireBase.getUid());
+                        if ((!l.status.equalsIgnoreCase("lock"))&& admin)
+                            FireBase.changeLockTo(l,"lock");
+                        else
+                            flg = !admin || flg;
+                    }
+                    if (flg)
+                        Snackbar.make(view, R.string.missingAdminPer, Snackbar.LENGTH_LONG).show();
+                }
             }
         });
+        
+        addImg= findViewById(R.id.addImg);
+        addImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(),Test_AddLock.class);
+                intent.putExtra("houseId",house.id);
+                startActivity(intent);
+            }
+        });
+        dltImg = findViewById(R.id.dltImg);
+        dltImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(HouseScreen.this, "צריך לבנות", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
 
@@ -139,8 +154,9 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
         TextView tv = (TextView) view;
         Lock l = FireBase.getLockByStr(tv.getText().toString());
         int i;
-        for (i=0;i<arr.size() && !arr.get(i).name.equalsIgnoreCase(tv.getText().toString());i++);
-        if (i<arr.size()) {
+        for (i = 0; i < arr.size() && !arr.get(i).name.equalsIgnoreCase(tv.getText().toString()); i++)
+            ;
+        if (i < arr.size()) {
             tv.setBackgroundColor(Color.TRANSPARENT);
             tv.setTypeface(Typeface.DEFAULT);
             arr.remove(i);

@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements FireBase.UpdateUi
         FireBase.getNicks();
     }
 
+    //    @SuppressLint("CutPasteId")
     @SuppressLint("CutPasteId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -33,14 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.75" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline14"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.85" />
+        app:layout_constraintGuide_percent="0.7" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline15"
@@ -48,57 +41,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
-
-    <Button
-        android:id="@+id/closaAll"
-        android:layout_width="108dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        android:onClick="ActionClicked"
-        android:text="Close All"
-        app:layout_constraintBottom_toTopOf="@+id/guideline14"
-        app:layout_constraintEnd_toEndOf="@+id/closeAdmin"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/closeAdmin"
-        app:layout_constraintTop_toTopOf="@+id/guideline13" />
-
-    <Button
-        android:id="@+id/openAll"
-        android:layout_width="131dp"
-        android:layout_height="wrap_content"
-        android:onClick="ActionClicked"
-        android:text="Open All"
-        app:layout_constraintBaseline_toBaselineOf="@+id/closaAll"
-        app:layout_constraintEnd_toEndOf="@+id/openAdmin"
-        app:layout_constraintStart_toStartOf="@+id/openAdmin" />
-
-    <Button
-        android:id="@+id/closeAdmin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:onClick="ActionClicked"
-        android:text="Admin lock"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline15"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/closaAll" />
-
-    <Button
-        android:id="@+id/openAdmin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:onClick="ActionClicked"
-        android:text="Admin release"
-        app:layout_constraintBaseline_toBaselineOf="@+id/closeAdmin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline15" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/lockList"
@@ -130,7 +72,7 @@
         app:layout_constraintGuide_percent="0.6" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/opemImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -147,22 +89,22 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:text="OPEN"
-        app:layout_constraintBottom_toTopOf="@+id/imageView"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
-        app:layout_constraintStart_toStartOf="@+id/imageView" />
+        app:layout_constraintBottom_toTopOf="@+id/opemImg"
+        app:layout_constraintEnd_toEndOf="@+id/opemImg"
+        app:layout_constraintStart_toStartOf="@+id/opemImg" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/closeImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintBottom_toBottomOf="@+id/opemImg"
         app:layout_constraintEnd_toStartOf="@+id/guideline15"
         app:layout_constraintStart_toStartOf="@+id/guideline15"
-        app:layout_constraintTop_toTopOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/opemImg"
         app:srcCompat="@drawable/close" />
 
     <TextView
@@ -171,19 +113,19 @@
         android:layout_height="wrap_content"
         android:text="CLOSE"
         app:layout_constraintBaseline_toBaselineOf="@+id/textView"
-        app:layout_constraintEnd_toEndOf="@+id/imageView2"
-        app:layout_constraintStart_toStartOf="@+id/imageView2" />
+        app:layout_constraintEnd_toEndOf="@+id/closeImg"
+        app:layout_constraintStart_toStartOf="@+id/closeImg" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/adminImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintBottom_toBottomOf="@+id/opemImg"
         app:layout_constraintEnd_toStartOf="@+id/guideline22"
         app:layout_constraintStart_toStartOf="@+id/guideline22"
-        app:layout_constraintTop_toTopOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/opemImg"
         app:srcCompat="@drawable/alock" />
 
     <TextView
@@ -192,8 +134,8 @@
         android:layout_height="wrap_content"
         android:text="ADMIN LOCK"
         app:layout_constraintBaseline_toBaselineOf="@+id/textView2"
-        app:layout_constraintEnd_toEndOf="@+id/imageView3"
-        app:layout_constraintStart_toStartOf="@+id/imageView3" />
+        app:layout_constraintEnd_toEndOf="@+id/adminImg"
+        app:layout_constraintStart_toStartOf="@+id/adminImg" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline21"
@@ -208,5 +150,52 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.8" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.85" />
+
+    <ImageView
+        android:id="@+id/addImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toEndOf="@+id/opemImg"
+        app:layout_constraintStart_toStartOf="@+id/opemImg"
+        app:srcCompat="@drawable/add" />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add\nLock"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/addImg"
+        app:layout_constraintStart_toStartOf="@+id/addImg"
+        app:layout_constraintTop_toTopOf="@+id/guideline" />
+
+    <ImageView
+        android:id="@+id/dltImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/addImg"
+        app:layout_constraintEnd_toEndOf="@+id/adminImg"
+        app:layout_constraintStart_toStartOf="@+id/adminImg"
+        app:layout_constraintTop_toTopOf="@+id/addImg"
+        app:srcCompat="@drawable/dlt" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete\nLock"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/textView7"
+        app:layout_constraintEnd_toEndOf="@+id/dltImg"
+        app:layout_constraintStart_toStartOf="@+id/dltImg"
+        app:layout_constraintTop_toTopOf="@+id/textView7" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
