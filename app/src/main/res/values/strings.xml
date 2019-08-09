@@ -20,4 +20,8 @@
     <string name="exists1">This lock already found in house: </string>
     <string name="exists2">Called: </string>
     <string name="sendReuest">Send requests to all the Admins?</string>
+    <string name ="manyToDelete">You can delete one locke at a time\nPlease choose only one lock to delete</string>
+    <string name="nothingToDelete">First you need to choose one lock to delete</string>
+    <string name="dltMsg">Are you sure you want to delete:</string>
+    <string name="dltAlert">This action cannot be undone!!!</string>
 </resources>

@@ -17,7 +17,7 @@
         android:roundIcon="@mipmap/lock"
         android:supportsRtl="false"
         android:theme="@style/Theme.AppCompat">
-        <activity android:name=".Activities.Test_AddLock"
+        <activity android:name=".Activities.AddLock"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity
             android:name=".Activities.HomePageActivity"

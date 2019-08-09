@@ -155,13 +155,6 @@ public class Register extends AppCompatActivity {
         });
     }
 
-//    private boolean checkNick() {
-//        for (String s : nicks)
-//            if (s.equalsIgnoreCase(nick.getText().toString()))
-//                return true;
-//        return false;
-//    }
-
     private void addUser() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users");

@@ -14,13 +14,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class FireBase {
@@ -228,7 +228,7 @@ public class FireBase {
     }
 
     //METHODS:
-        //Sign up
+    //Sign up
     public static void signUp(final String user, String pass, final UpdateUi u) {
         mAuth.signInWithEmailAndPassword(user, pass)
                 .addOnCompleteListener((Activity) u, new OnCompleteListener<AuthResult>() {
@@ -236,7 +236,6 @@ public class FireBase {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-//                            currentUser = mAuth.getCurrentUser();
                             if (userRef != null)
                                 userRef.removeEventListener(userListener);
                             userRef = db.getReference("users").child(getUid());
@@ -252,7 +251,7 @@ public class FireBase {
                 });
     }
 
-        //Download data
+    //Download data
     private static void download() {
         userHouses = new ArrayList<>();
         userLocks = new ArrayList<>();
@@ -267,7 +266,7 @@ public class FireBase {
 
     }
 
-        //download all the users nicks
+    //download all the users nicks
     public static void getNicks() {
         nicks = new HashMap<>();
         ref = db.getReference("users");
@@ -302,12 +301,12 @@ public class FireBase {
         });
     }
 
-        //checking if nick is taken
+    //checking if nick is taken
     public static boolean checkNick(String s) {
         return nicks.containsKey(s);
     }
 
-        //add listener for houses updates
+    //add listener for houses updates
     public static void addToUpdateHouse(UpdateHouseData adapter) {
         int place = updateHouse.indexOf(adapter);
         if (place > -1)
@@ -316,13 +315,13 @@ public class FireBase {
             updateHouse.add(adapter);
     }
 
-        //remove listener for houses updates
+    //remove listener for houses updates
     public static void removeFromUpdateHouse(UpdateHouseData adapter) {
         if (updateHouse.contains(adapter))
             updateHouse.remove(adapter);
     }
 
-        //add listener for locks updates
+    //add listener for locks updates
     public static void addToUpdateLocks(UpdateLockData adapter) {
         int place = updateLocks.indexOf(adapter);
         if (place > -1)
@@ -331,20 +330,20 @@ public class FireBase {
             updateLocks.add(adapter);
     }
 
-        //remove listener for locks updates
+    //remove listener for locks updates
     public static void removeFromUpdateLock(UpdateLockData adapter) {
         if (updateLocks.contains(adapter))
             updateLocks.remove(adapter);
     }
 
-        //changing lock status
+    //changing lock status
     public static void changeLockTo(Lock lock, String status) {
         lock.status = status;
         ref = db.getReference("locks").child(lock.id);
         ref.setValue(lock);
     }
 
-        //looking for specific lock in all DB
+    //looking for specific lock in all DB
     public static void searchGeneralLock(final String str, final FindLock cb) {
         houseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -354,7 +353,7 @@ public class FireBase {
                     House house = data.getValue(House.class);
                     if (house.locks.contains(str)) {
                         found = true;
-                        findLockinDB(str, house, cb);
+                        findLockInDB(str, house, cb);
                     }
                 }
                 if (!found)
@@ -368,27 +367,70 @@ public class FireBase {
         });
     }
 
-    //PRIVATE METHODS:
+    //deleting lock process
+    public static void deleteLock(String str, final UpdateUi cb) {
+        final Lock lock = getLockByStr(str);
+        //deleting the lock from the user record
+        ArrayList<String> list = new ArrayList<>(Arrays.asList(user.lockList.split(",")));
+        list.remove(lock.id);
+        user.lockList = buildStringFromList(list);
+        userRef.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                //deleting the user from the lock records
+                if (lock.admin.contains(getUid())){
+                    List<String> admins = new ArrayList<>(Arrays.asList(lock.admin.split(",")));
+                    admins.remove(getUid());
+                    lock.admin = buildStringFromList(admins);
+                }else{
+                    List<String> notAdmins = new ArrayList<>(Arrays.asList(lock.notAdmin.split(",")));
+                    notAdmins.remove(getUid());
+                    lock.notAdmin = buildStringFromList(notAdmins);
+                }
+                lockRef.child(lock.id).setValue(lock).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        cb.Success();
+                    }
+                });
+            }
+        });
 
+    }
+
+    //PRIVATE METHODS:
     private static String add_id_to_string(String src, String id) {
         src += (src.length() > 0) ? "," + id : id;
-        ArrayList<String> arr = new ArrayList<>(Arrays.asList(src.split(",")));
-        Collections.sort(arr);
+//        ArrayList<String> arr = new ArrayList<>(Arrays.asList(src.split(",")));
+//        Collections.sort(arr);
+//        String s = "";
+//        for (int i = 0; i < arr.size(); i++)
+//            if (i == 0)
+//                s = arr.get(i);
+//            else
+//                s += "," + arr.get(i);
+//        return s;
+        return buildStringFromList(Arrays.asList(src.split(",")));
+    }
+
+    private static String buildStringFromList(List<String> list) {
+        Collections.sort(list);
         String s = "";
-        for (int i = 0; i < arr.size(); i++)
+        for (int i = 0; i < list.size(); i++)
             if (i == 0)
-                s = arr.get(i);
+                s = list.get(i);
             else
-                s += "," + arr.get(i);
+                s += "," + list.get(i);
         return s;
     }
 
-    private static void findLockinDB(final String str, final House house, final FindLock cb) {
-        System.out.println("testing --> house = "+house.name+" lock = "+str);
+    //finding lock in the all DB
+    private static void findLockInDB(final String str, final House house, final FindLock cb) {
+        System.out.println("testing --> house = " + house.name + " lock = " + str);
         lockRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot data:dataSnapshot.getChildren()){
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
                     Lock lock = data.getValue(Lock.class);
                     if (lock.id.equalsIgnoreCase(str)) {
                         cb.found(house, lock);

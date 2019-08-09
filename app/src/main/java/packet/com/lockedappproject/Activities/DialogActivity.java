@@ -1,5 +1,6 @@
 package packet.com.lockedappproject.Activities;
 
+import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -13,11 +14,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import packet.com.lockedappproject.R;
+import packet.com.lockedappproject.models.FireBase;
+import packet.com.lockedappproject.models.Lock;
 
 public class DialogActivity extends AppCompatActivity {
 
     private Button ok,cancel;
-    private ConstraintLayout takenLayout,foundLayout,newLockLayout;
+    private ConstraintLayout takenLayout,foundLayout,newLockLayout,dltLockLayout;
     private TextView header;
     private ImageView img;
 
@@ -40,6 +43,7 @@ public class DialogActivity extends AppCompatActivity {
         takenLayout = findViewById(R.id.takenLayout);
         foundLayout = findViewById(R.id.foundLayout);
         newLockLayout = findViewById(R.id.newLockLayout);
+        dltLockLayout = findViewById(R.id.dltLockLayout);
         //TextView
         header = findViewById(R.id.header);
         //ImageView
@@ -70,7 +74,7 @@ public class DialogActivity extends AppCompatActivity {
                     }
                 });
                 break;
-            //new lock and nwe house:
+            //new lock and new house:
             case 2:
                 header.setText("Add lock");
                 img.setImageResource(R.drawable.add);
@@ -92,11 +96,28 @@ public class DialogActivity extends AppCompatActivity {
                     }
                 });
                 break;
+            //new lock from house
             case 3:
                 header.setText("Add lock");
                 img.setImageResource(R.drawable.add);
                 newLockLayout.setVisibility(View.VISIBLE);
-
+                break;
+            //delete house
+            case 4:
+                header.setText("Delete lock");
+                img.setImageResource(R.drawable.dlt);
+                dltLockLayout.setVisibility(View.VISIBLE);
+                final String lName = getIntent().getStringExtra("lockName");
+                TextView dltLockName = findViewById(R.id.dltLockName);
+                dltLockName.setText(lName);
+                ok.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        FireBase.deleteLock(lName);
+                        finish();
+                    }
+                });
+                break;
         }
     }
 

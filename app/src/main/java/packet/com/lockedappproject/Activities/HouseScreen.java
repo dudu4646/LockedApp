@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.House;
 import packet.com.lockedappproject.models.Lock;
 
-public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.Interface {
+public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.Interface, FireBase.UpdateUi  {
 
     private TextView h1, h2, checkNum;
     private RecyclerView lockList;
@@ -121,7 +122,7 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
         addImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(),Test_AddLock.class);
+                Intent intent = new Intent(getApplicationContext(), AddLock.class);
                 intent.putExtra("houseId",house.id);
                 startActivity(intent);
             }
@@ -130,12 +131,17 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
         dltImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(HouseScreen.this, "צריך לבנות", Toast.LENGTH_SHORT).show();
+                if (arr.size()!=1)
+                    Snackbar.make(view,((arr.size()==0)?R.string.nothingToDelete:R.string.manyToDelete),Snackbar.LENGTH_LONG).show();
+                else{
+                    Toast.makeText(HouseScreen.this, "activate FireBase.deleteLockFromUser()", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
+                    intent.putExtra("lockName",arr.get(0).name);
+                    startActivity(intent);
+                }
             }
         });
-
     }
-
 
     @Override
     protected void onStart() {
@@ -168,5 +174,15 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
         checkNum.setText((arr.size() == 0) ? "" : arr.size() + "/" + size);
     }
 
+    @Override
+    public void Success() {
+        arr= new ArrayList<>();
+        checkNum.setText("");
+    }
+
+    @Override
+    public void Failed(Exception e) {
+
+    }
 }
 

@@ -62,7 +62,7 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
 
     @Override
     public void addTo(House house) {
-        Intent intent = new Intent(getApplicationContext(),Test_AddLock.class);
+        Intent intent = new Intent(getApplicationContext(), AddLock.class);
         intent.putExtra("houseId",house.id);
         startActivity(intent);
     }

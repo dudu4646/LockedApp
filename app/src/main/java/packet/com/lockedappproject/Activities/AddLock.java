@@ -16,7 +16,7 @@ import packet.com.lockedappproject.models.House;
 import packet.com.lockedappproject.models.Lock;
 import packet.com.lockedappproject.models.User;
 
-public class Test_AddLock extends AppCompatActivity implements FireBase.FindLock {
+public class AddLock extends AppCompatActivity implements FireBase.FindLock {
 
     private EditText lockId;
     private Button search;
@@ -24,7 +24,7 @@ public class Test_AddLock extends AppCompatActivity implements FireBase.FindLock
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test__add_lock);
+        setContentView(R.layout.activity_add_lock);
 
         //EditText
         lockId = findViewById(R.id.lockId);
@@ -62,7 +62,7 @@ public class Test_AddLock extends AppCompatActivity implements FireBase.FindLock
                     finish();
 
                 } else
-                    FireBase.searchGeneralLock(str, Test_AddLock.this);
+                    FireBase.searchGeneralLock(str, AddLock.this);
             }
         });
     }
