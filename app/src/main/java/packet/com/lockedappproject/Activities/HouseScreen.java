@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +24,11 @@ import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.House;
 import packet.com.lockedappproject.models.Lock;
 
-public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.Interface, FireBase.UpdateUi  {
+public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.Interface, FireBase.UpdateUi {
 
     private TextView h1, h2, checkNum;
     private RecyclerView lockList;
-    private ImageView open, close, admin,addImg,dltImg;
+    private ImageView open, close, admin, addImg, dltImg;
     private HouseScreenAdapt adapt;
     private House house;
     private List<Lock> arr;
@@ -66,7 +65,7 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
                     for (Lock l : arr) {
                         boolean admin = l.admin.contains(FireBase.getUid());
                         if (l.status.equalsIgnoreCase("close") ||
-                            (l.status.equalsIgnoreCase("lock") && admin))
+                                (l.status.equalsIgnoreCase("lock") && admin))
                             FireBase.changeLockTo(l, "open");
                         else
                             flg = (l.status.equalsIgnoreCase("lock") && !admin) || flg;
@@ -87,7 +86,7 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
                     for (Lock l : arr) {
                         boolean admin = l.admin.contains(FireBase.getUid());
                         if ((l.status.equalsIgnoreCase("open")) ||
-                            (l.status.equalsIgnoreCase("lock") && admin))
+                                (l.status.equalsIgnoreCase("lock") && admin))
                             FireBase.changeLockTo(l, "close");
                         else
                             flg = (l.status.equalsIgnoreCase("lock") && !admin) || flg;
@@ -103,12 +102,12 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
             public void onClick(View view) {
                 if (arr.size() == 0)
                     Snackbar.make(view, "Choose Lock to open", Snackbar.LENGTH_SHORT);
-                else{
+                else {
                     boolean flg = false;
-                    for(Lock l:arr) {
+                    for (Lock l : arr) {
                         boolean admin = l.admin.contains(FireBase.getUid());
-                        if ((!l.status.equalsIgnoreCase("lock"))&& admin)
-                            FireBase.changeLockTo(l,"lock");
+                        if ((!l.status.equalsIgnoreCase("lock")) && admin)
+                            FireBase.changeLockTo(l, "lock");
                         else
                             flg = !admin || flg;
                     }
@@ -117,31 +116,35 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
                 }
             }
         });
-        
-        addImg= findViewById(R.id.addImg);
+
+        addImg = findViewById(R.id.addImg);
         addImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), AddLock.class);
-                intent.putExtra("houseId",house.id);
+                intent.putExtra("houseId", house.id);
                 startActivity(intent);
+
             }
         });
         dltImg = findViewById(R.id.dltImg);
         dltImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (arr.size()!=1)
-                    Snackbar.make(view,((arr.size()==0)?R.string.nothingToDelete:R.string.manyToDelete),Snackbar.LENGTH_LONG).show();
-                else{
+                if (arr.size() != 1)
+                    Snackbar.make(view, ((arr.size() == 0) ? R.string.nothingToDelete : R.string.manyToDelete), Snackbar.LENGTH_LONG).show();
+                else {
                     Toast.makeText(HouseScreen.this, "activate FireBase.deleteLockFromUser()", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
-                    intent.putExtra("lockName",arr.get(0).name);
+                    intent.putExtra("lockName", arr.get(0).name);
+                    intent.putExtra("status", 4);
                     startActivity(intent);
+
                 }
             }
         });
     }
+
 
     @Override
     protected void onStart() {
@@ -176,7 +179,7 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
 
     @Override
     public void Success() {
-        arr= new ArrayList<>();
+        arr = new ArrayList<>();
         checkNum.setText("");
     }
 

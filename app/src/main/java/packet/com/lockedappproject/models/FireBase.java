@@ -368,7 +368,7 @@ public class FireBase {
     }
 
     //deleting lock process
-    public static void deleteLock(String str, final UpdateUi cb) {
+    public static void deleteLock(String str) {
         final Lock lock = getLockByStr(str);
         //deleting the lock from the user record
         ArrayList<String> list = new ArrayList<>(Arrays.asList(user.lockList.split(",")));
@@ -387,12 +387,7 @@ public class FireBase {
                     notAdmins.remove(getUid());
                     lock.notAdmin = buildStringFromList(notAdmins);
                 }
-                lockRef.child(lock.id).setValue(lock).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        cb.Success();
-                    }
-                });
+                lockRef.child(lock.id).setValue(lock);
             }
         });
 

@@ -23,5 +23,5 @@
     <string name ="manyToDelete">You can delete one locke at a time\nPlease choose only one lock to delete</string>
     <string name="nothingToDelete">First you need to choose one lock to delete</string>
     <string name="dltMsg">Are you sure you want to delete:</string>
-    <string name="dltAlert">This action cannot be undone!!!</string>
+    <string name="dltAlert">This action can not be undone!!!</string>
 </resources>

@@ -1,8 +1,6 @@
 package packet.com.lockedappproject.Activities;
 
-import android.content.Context;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,13 +47,7 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
     @Override
     public void goTO(House house) {
 
-        Intent intent;
-        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if ((manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) && ((house.lat != 0) && (house.lot != 0))) {
-            intent = new Intent(getApplicationContext(), MapsActivity.class);
-        } else {
-            intent = new Intent(getApplicationContext(), HouseScreen.class);
-        }
+        Intent intent = new Intent(getApplicationContext(), HouseScreen.class);
         intent.putExtra("houseId", house.id);
         startActivity(intent);
     }
@@ -63,7 +55,7 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
     @Override
     public void addTo(House house) {
         Intent intent = new Intent(getApplicationContext(), AddLock.class);
-        intent.putExtra("houseId",house.id);
+        intent.putExtra("houseId", house.id);
         startActivity(intent);
     }
 }
