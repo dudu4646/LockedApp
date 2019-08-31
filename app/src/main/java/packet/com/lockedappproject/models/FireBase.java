@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -180,6 +181,9 @@ public class FireBase {
         return userHouses;
     }
 
+    //get all the user locks
+    public static ArrayList<Lock> getLockes() { return userLocks; }
+
     //get locks from single house
     public static ArrayList<Lock> getLockFromList(String list) {
         String[] locks = list.split(",");
@@ -195,14 +199,13 @@ public class FireBase {
         return arr;
     }
 
-    //get single house
-    public static House getOneHouse(String id) {
+    //get single house by id/name
+    public static House getOneHouse(String str) {
         for (House h : userHouses)
-            if (h.id.equalsIgnoreCase(id))
+            if (h.id.equalsIgnoreCase(str)||(h.name.equalsIgnoreCase(str)))
                 return h;
         return null;
     }
-
 
     //get single house by lock
     public static House getHousebyLock(String str) {
@@ -212,10 +215,10 @@ public class FireBase {
         return null;
     }
 
-    //get lock from list by name/id
-    public static Lock getLockByStr(String str) {
+    //get lock from list by id
+    public static Lock getLockByStr(String id) {
         for (Lock lock : userLocks)
-            if (lock.name.equalsIgnoreCase(str) || (lock.id.equalsIgnoreCase(str)))
+            if (lock.name.equalsIgnoreCase(id))
                 return lock;
         return null;
     }
@@ -378,11 +381,11 @@ public class FireBase {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 //deleting the user from the lock records
-                if (lock.admin.contains(getUid())){
+                if (lock.admin.contains(getUid())) {
                     List<String> admins = new ArrayList<>(Arrays.asList(lock.admin.split(",")));
                     admins.remove(getUid());
                     lock.admin = buildStringFromList(admins);
-                }else{
+                } else {
                     List<String> notAdmins = new ArrayList<>(Arrays.asList(lock.notAdmin.split(",")));
                     notAdmins.remove(getUid());
                     lock.notAdmin = buildStringFromList(notAdmins);
@@ -391,6 +394,18 @@ public class FireBase {
             }
         });
 
+    }
+
+    //adding new lock to House
+    public static void addNewLock(Lock lock,House house){
+        ref=lockRef.push();
+        lock.id=ref.getKey();
+        User user = getUser();
+        user.lockList=add_id_to_string(user.lockList,lock.id);
+        house.locks=add_id_to_string(house.locks,lock.id);
+        userRef.setValue(user);
+        houseRef.child(house.id).setValue(house);
+        ref.setValue(lock);
     }
 
     //PRIVATE METHODS:
@@ -440,7 +455,6 @@ public class FireBase {
             }
         });
     }
-
 
     //INTERFACES:
     public interface UpdateUi {

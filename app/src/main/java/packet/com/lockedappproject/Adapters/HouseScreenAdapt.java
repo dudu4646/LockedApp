@@ -15,12 +15,13 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
+import packet.com.lockedappproject.Activities.DialogActivity;
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.Lock;
 
 
-public class HouseScreenAdapt extends RecyclerView.Adapter<HouseScreenAdapt.LockHolder> implements FireBase.UpdateLockData {
+public class HouseScreenAdapt extends RecyclerView.Adapter<HouseScreenAdapt.LockHolder> implements FireBase.UpdateLockData{
 
     private Context context;
     private List<Lock> locks;
@@ -87,10 +88,10 @@ public class HouseScreenAdapt extends RecyclerView.Adapter<HouseScreenAdapt.Lock
         notifyDataSetChanged();
     }
 
+
     public interface Interface {
         void handleLock(View view, int size);
     }
-
 
     static class LockHolder extends RecyclerView.ViewHolder {
 

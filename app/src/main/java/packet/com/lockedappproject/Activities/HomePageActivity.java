@@ -2,8 +2,10 @@ package packet.com.lockedappproject.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,6 +21,7 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
     private RecyclerView cardsView;
     private List<House> houseList;
     private HouseCard adapt;
+    private ConstraintLayout newLockLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +33,15 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
         adapt = new HouseCard(houseList, getApplicationContext(), this);
         cardsView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false));
         cardsView.setAdapter(adapt);
+        newLockLayout = findViewById(R.id.NewLockLayout);
+        newLockLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(),AddLock.class);
+                intent.putExtra("houseName","new House");
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -55,7 +67,7 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
     @Override
     public void addTo(House house) {
         Intent intent = new Intent(getApplicationContext(), AddLock.class);
-        intent.putExtra("houseId", house.id);
+        intent.putExtra("houseName", house.name);
         startActivity(intent);
     }
 }

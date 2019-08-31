@@ -1,20 +1,24 @@
 package packet.com.lockedappproject.Activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +28,7 @@ import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.House;
 import packet.com.lockedappproject.models.Lock;
 
-public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.Interface, FireBase.UpdateUi {
+public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.Interface, FireBase.UpdateUi{
 
     private TextView h1, h2, checkNum;
     private RecyclerView lockList;
@@ -122,8 +126,9 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), AddLock.class);
-                intent.putExtra("houseId", house.id);
-                startActivity(intent);
+                intent.putExtra("houseName", house.name);
+
+                startActivityForResult(intent,1);
 
             }
         });
@@ -134,13 +139,12 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
                 if (arr.size() != 1)
                     Snackbar.make(view, ((arr.size() == 0) ? R.string.nothingToDelete : R.string.manyToDelete), Snackbar.LENGTH_LONG).show();
                 else {
-                    Toast.makeText(HouseScreen.this, "activate FireBase.deleteLockFromUser()", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
                     intent.putExtra("lockName", arr.get(0).name);
                     intent.putExtra("status", 4);
-                    startActivity(intent);
-
+                    startActivityForResult(intent,1);
                 }
+
             }
         });
     }
@@ -186,6 +190,17 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
     @Override
     public void Failed(Exception e) {
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1){
+            finish();
+            overridePendingTransition(0, 0);
+            startActivity(getIntent());
+            overridePendingTransition(0, 0);
+        }
     }
 }
 
