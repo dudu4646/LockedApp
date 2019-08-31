@@ -72,8 +72,77 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
         checkBox = findViewById(R.id.checkBox);
         //EditText
         addHouseName = findViewById(R.id.addHouseName);
+        addHouseName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String name = editable.toString().trim();
+                if(name.length()==0)
+                    addHouseName.setError("Cant' remain empty...");
+                else{
+                    boolean flg=false;
+                    ArrayList<House> houses=FireBase.getHouses();
+                    for (House h:houses){
+                        if(h.name.equalsIgnoreCase(name)){
+                            flg=true;
+                            newLockName.setError("This name already taken, Try another one");
+                            break;
+                        }
+                    }
+                    if (!flg)
+                        addHouseName.setError(null);
+                }
+            }
+        });
         addHouseStreet = findViewById(R.id.addHouseStreet);
+        addHouseStreet.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.toString().trim().length()==0)
+                    addHouseStreet.setError("Cant' remain empty...");
+                else
+                    addHouseStreet.setError(null);
+            }
+        });
         addHouseAddress = findViewById(R.id.addHouseAddress);
+        addHouseAddress.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.toString().trim().length()==0)
+                    addHouseAddress.setError("Cant' remain empty...");
+                else
+                    addHouseAddress.setError(null);
+            }
+        });
         newLockName = findViewById(R.id.newLockName);
         newLockName.addTextChangedListener(new TextWatcher() {
             @Override
@@ -252,6 +321,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
             finish();
         } else {
             Toast.makeText(this, "לבנות הוספה של בית ומנעול חדש", Toast.LENGTH_SHORT).show();
+
         }
     }
 
