@@ -86,6 +86,7 @@ public class AddLock extends AppCompatActivity implements FireBase.FindLock {
         Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
         intent.putExtra("status", 3);
         intent.putExtra("houseName",toHouse);
+        intent.putExtra("houseId",lockId.getText().toString().trim());
         startActivity(intent);
         finish();
     }

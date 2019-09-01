@@ -313,7 +313,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
             admin = FireBase.getUid();
         else
             notAdmin = FireBase.getUid();
-        Lock lock = new Lock(name, "open", "", admin, notAdmin);
+        Lock lock = new Lock(name, "open", getIntent().getStringExtra("houseId"), admin, notAdmin);
 
         if (position != 0) {
             House house = FireBase.getHouses().get(position - 1);

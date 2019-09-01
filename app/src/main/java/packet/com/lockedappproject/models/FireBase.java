@@ -398,14 +398,12 @@ public class FireBase {
 
     //adding new lock to House
     public static void addNewLock(Lock lock,House house){
-        ref=lockRef.push();
-        lock.id=ref.getKey();
         User user = getUser();
         user.lockList=add_id_to_string(user.lockList,lock.id);
         house.locks=add_id_to_string(house.locks,lock.id);
         userRef.setValue(user);
         houseRef.child(house.id).setValue(house);
-        ref.setValue(lock);
+        lockRef.child(lock.id).setValue(lock);
     }
 
     //PRIVATE METHODS:
