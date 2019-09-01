@@ -35,7 +35,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
     private Button ok, cancel;
     private ConstraintLayout takenLayout, foundLayout, newLockLayout, dltLockLayout, newHouseLayout;
     private TextView header;
-    private EditText addHouseName, addHouseStreet, addHouseAddress, newLockName;
+    private EditText addHouseName, addHouseCity, addHouseAddress, newLockName;
     private ImageView img;
     private Spinner spinner;
     private CheckBox checkBox;
@@ -86,14 +86,14 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
             @Override
             public void afterTextChanged(Editable editable) {
                 String name = editable.toString().trim();
-                if(name.length()==0)
+                if (name.length() == 0)
                     addHouseName.setError("Cant' remain empty...");
-                else{
-                    boolean flg=false;
-                    ArrayList<House> houses=FireBase.getHouses();
-                    for (House h:houses){
-                        if(h.name.equalsIgnoreCase(name)){
-                            flg=true;
+                else {
+                    boolean flg = false;
+                    ArrayList<House> houses = FireBase.getHouses();
+                    for (House h : houses) {
+                        if (h.name.equalsIgnoreCase(name)) {
+                            flg = true;
                             newLockName.setError("This name already taken, Try another one");
                             break;
                         }
@@ -103,8 +103,8 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
                 }
             }
         });
-        addHouseStreet = findViewById(R.id.addHouseStreet);
-        addHouseStreet.addTextChangedListener(new TextWatcher() {
+        addHouseCity = findViewById(R.id.addHouseCity);
+        addHouseCity.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -117,10 +117,10 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.toString().trim().length()==0)
-                    addHouseStreet.setError("Cant' remain empty...");
+                if (editable.toString().trim().length() == 0)
+                    addHouseCity.setError("Cant' remain empty...");
                 else
-                    addHouseStreet.setError(null);
+                    addHouseCity.setError(null);
             }
         });
         addHouseAddress = findViewById(R.id.addHouseAddress);
@@ -137,7 +137,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.toString().trim().length()==0)
+                if (editable.toString().trim().length() == 0)
                     addHouseAddress.setError("Cant' remain empty...");
                 else
                     addHouseAddress.setError(null);
@@ -256,12 +256,13 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
                 img.setImageResource(R.drawable.dlt);
                 dltLockLayout.setVisibility(View.VISIBLE);
                 final String lName = getIntent().getStringExtra("lockName");
+                final String houseId = getIntent().getStringExtra("houseId");
                 TextView dltLockName = findViewById(R.id.dltLockName);
                 dltLockName.setText(lName);
                 ok.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        FireBase.deleteLock(lName);
+                        FireBase.deleteLock(lName, houseId);
                         Intent intent = new Intent();
                         setResult(2, intent);
                         finish();
@@ -276,7 +277,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
         boolean house = true;
         if ((newHouseLayout.getVisibility() == View.VISIBLE) &&
                 (addHouseName.getError() != null || addHouseName.getText().length() == 0 ||
-                        addHouseStreet.getError() != null || addHouseStreet.getText().length() == 0 ||
+                        addHouseCity.getError() != null || addHouseCity.getText().length() == 0 ||
                         addHouseAddress.getError() != null || addHouseAddress.getText().length() == 0))
             house = false;
         return name && house;
@@ -289,7 +290,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
         } else {
             newHouseLayout.setVisibility(View.VISIBLE);
             addHouseAddress.setText("");
-            addHouseStreet.setText("");
+            addHouseCity.setText("");
             addHouseName.setText("");
         }
     }
@@ -299,7 +300,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
         if (spinner.getSelectedItemPosition() == 0) {
             newHouseLayout.setVisibility(View.VISIBLE);
             addHouseAddress.setText("");
-            addHouseStreet.setText("");
+            addHouseCity.setText("");
             addHouseName.setText("");
         }
     }
@@ -307,22 +308,18 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
     private void addLock(int position) {
         //יצירה של המנעול החדש
         String name = newLockName.getText().toString().trim();
-        String admin = "";
+        String admin = FireBase.getUid();
         String notAdmin = "";
-        if (checkBox.isChecked())
-            admin = FireBase.getUid();
-        else
-            notAdmin = FireBase.getUid();
         Lock lock = new Lock(name, "open", getIntent().getStringExtra("houseId"), admin, notAdmin);
-
-        if (position != 0) {
-            House house = FireBase.getHouses().get(position - 1);
-            FireBase.addNewLock(lock, house);
-            finish();
-        } else {
-            Toast.makeText(this, "לבנות הוספה של בית ומנעול חדש", Toast.LENGTH_SHORT).show();
-
+        House house;
+        if (position != 0)
+            house = FireBase.getHouses().get(position - 1);
+        else {
+            house = new House(addHouseName.getText().toString().trim(),
+                    addHouseCity.getText().toString().trim() + ", " + addHouseAddress.getText().toString().trim(),
+                    "", 0, 0, FireBase.getUid(), "");
         }
+        FireBase.addNewLock(lock, house);
     }
 
 }

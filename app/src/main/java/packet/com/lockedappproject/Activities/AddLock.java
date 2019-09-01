@@ -52,7 +52,7 @@ public class AddLock extends AppCompatActivity implements FireBase.FindLock {
             public void onClick(View view) {
                 String str = lockId.getText().toString();
                 User user = FireBase.getUser();
-                if (user.lockList.contains(str)) {
+                if (user.lockList!=null && user.lockList.contains(str)) {
                     Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
                     House house = FireBase.getHousebyLock(str);
                     Lock lock = FireBase.getLockByStr(str);
@@ -82,7 +82,8 @@ public class AddLock extends AppCompatActivity implements FireBase.FindLock {
     }
 
     @Override
-    public void notFound() {
+    public void notFound(String lId) {
+        FireBase.addTemp(lId);
         Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
         intent.putExtra("status", 3);
         intent.putExtra("houseName",toHouse);

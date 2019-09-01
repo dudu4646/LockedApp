@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +34,7 @@ public class FireBase {
     private static HashMap<String, String> nicks;
     private static ArrayList<UpdateHouseData> updateHouse = new ArrayList<>();
     private static ArrayList<UpdateLockData> updateLocks = new ArrayList<>();
+    private static String tempLock="";
 
 
     //LISTENERS:
@@ -182,7 +182,9 @@ public class FireBase {
     }
 
     //get all the user locks
-    public static ArrayList<Lock> getLockes() { return userLocks; }
+    public static ArrayList<Lock> getLockes() {
+        return userLocks;
+    }
 
     //get locks from single house
     public static ArrayList<Lock> getLockFromList(String list) {
@@ -202,7 +204,7 @@ public class FireBase {
     //get single house by id/name
     public static House getOneHouse(String str) {
         for (House h : userHouses)
-            if (h.id.equalsIgnoreCase(str)||(h.name.equalsIgnoreCase(str)))
+            if (h.id.equalsIgnoreCase(str) || (h.name.equalsIgnoreCase(str)))
                 return h;
         return null;
     }
@@ -347,20 +349,20 @@ public class FireBase {
     }
 
     //looking for specific lock in all DB
-    public static void searchGeneralLock(final String str, final FindLock cb) {
+    public static void searchGeneralLock(final String lId, final FindLock cb) {
         houseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean found = false;
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
                     House house = data.getValue(House.class);
-                    if (house.locks.contains(str)) {
+                    if (house.locks.contains(lId)) {
                         found = true;
-                        findLockInDB(str, house, cb);
+                        findLockInDB(lId, house, cb);
                     }
                 }
                 if (!found)
-                    cb.notFound();
+                    cb.notFound(lId);
             }
 
             @Override
@@ -371,42 +373,93 @@ public class FireBase {
     }
 
     //deleting lock process
-    public static void deleteLock(String str) {
-        final Lock lock = getLockByStr(str);
-        //deleting the lock from the user record
-        ArrayList<String> list = new ArrayList<>(Arrays.asList(user.lockList.split(",")));
-        list.remove(lock.id);
-        user.lockList = buildStringFromList(list);
-        userRef.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                //deleting the user from the lock records
-                if (lock.admin.contains(getUid())) {
-                    List<String> admins = new ArrayList<>(Arrays.asList(lock.admin.split(",")));
-                    admins.remove(getUid());
-                    lock.admin = buildStringFromList(admins);
-                } else {
-                    List<String> notAdmins = new ArrayList<>(Arrays.asList(lock.notAdmin.split(",")));
-                    notAdmins.remove(getUid());
-                    lock.notAdmin = buildStringFromList(notAdmins);
-                }
-                lockRef.child(lock.id).setValue(lock);
+    public static void deleteLock(String lName, String hId) {
+        //טיפול במנעול
+        Lock lock = getLockByStr(lName);
+        if (lock.admin.contains(getUid())) {
+            lock.admin = deleteUid(lock.admin);
+            if (lock.admin.length() == 0) {
+                if (lock.notAdmin.length() > 0)
+                    lock = makeAdmin(lock);
+                else
+                    lockRef.child(lock.id).removeValue();
             }
-        });
+        }
+        else
+            lock.notAdmin = deleteUid(lock.notAdmin);
 
+        //עדכון המנעול ב- FB
+        lockRef.child(lock.id).setValue(lock);
+        //בדיקה אם צריך למחוק את המנעול
+        boolean flg = (lock.admin.equalsIgnoreCase(""))&&lock.notAdmin.equalsIgnoreCase("");
+
+        //טיפול בבית - אם צריך למחוק ממנו את המנעול
+        House house = getOneHouse(hId);
+        ArrayList<String> arr;
+        if (flg) {
+            //בדיקה אם יש עוד מנעולים בבית
+            arr = new ArrayList<>(Arrays.asList(house.locks.split(",")));
+            arr.remove(lock.id);
+            if (arr.size() == 0)
+                //מחיקת הבית מ- FB
+                houseRef.child(house.id).removeValue();
+            else {
+                //מחיקת המנעול מהבית ועדכון ב FB
+                house.locks = buildStringFromList(arr);
+                houseRef.child(house.id).setValue(house);
+            }
+        }
+
+        //עדכון היוזר - מחיקת המנעול
+        User user = getUser();
+        arr = new ArrayList<>(Arrays.asList(user.lockList.split(",")));
+        arr.remove(lock.id);
+        user.lockList = (arr.size() > 0) ? buildStringFromList(arr) : "";
+        //בדיקה אם צריך למחוק את הבית
+        if (house.locks.equalsIgnoreCase("")) {
+            arr = new ArrayList<>(Arrays.asList(user.houseList.split(",")));
+            //מחיקת הבית מהרשומה ביוזר
+            arr.remove(house.id);
+            user.houseList = (arr.size() > 0) ? buildStringFromList(arr) : "";
+        }
+        //עדכון יוזר ב- FB
+        userRef.setValue(user);
     }
 
     //adding new lock to House
-    public static void addNewLock(Lock lock,House house){
+    public static void addNewLock(Lock lock, House house) {
         User user = getUser();
-        user.lockList=add_id_to_string(user.lockList,lock.id);
-        house.locks=add_id_to_string(house.locks,lock.id);
+        user.lockList = add_id_to_string(user.lockList, lock.id);
+        house.locks = add_id_to_string(house.locks, lock.id);
+
+        //בדיקה אם הבית חדש
+        if (house.id == null || house.id.length() == 0) {
+            ref = houseRef.push();
+            house.id = ref.getKey();
+            user.houseList = add_id_to_string(user.houseList,house.id);
+        }
+        //כתיבת המידע
         userRef.setValue(user);
         houseRef.child(house.id).setValue(house);
         lockRef.child(lock.id).setValue(lock);
     }
 
+    //adding temp lock to prevent overlapping
+    public static void addTemp(String lId){
+        lockRef.child(lId).setValue(new Lock("","","","",""));
+        tempLock = lId;
+    }
+
+    //deleting temp lock
+    public static void deleteTemp(){
+        if (!tempLock.equalsIgnoreCase("")){
+            lockRef.child(tempLock).removeValue();
+            tempLock="";
+        }
+    }
+
     //PRIVATE METHODS:
+    //add id to string
     private static String add_id_to_string(String src, String id) {
         src += (src.length() > 0) ? "," + id : id;
 //        ArrayList<String> arr = new ArrayList<>(Arrays.asList(src.split(",")));
@@ -421,6 +474,7 @@ public class FireBase {
         return buildStringFromList(Arrays.asList(src.split(",")));
     }
 
+    //build string from list (sort + adding ",")
     private static String buildStringFromList(List<String> list) {
         Collections.sort(list);
         String s = "";
@@ -454,6 +508,31 @@ public class FireBase {
         });
     }
 
+    //remove uId from string
+    private static String deleteUid(String str) {
+        ArrayList<String> arr = new ArrayList<>(Arrays.asList(str.split(",")));
+        arr.remove(getUid());
+        // list.remove(getUid());
+        if (arr.size() == 0)
+            return "";
+        return buildStringFromList(arr);
+    }
+
+    //make first not-admin --> admin
+    private static Lock makeAdmin(Lock lock) {
+        ArrayList<String> not = new ArrayList<>(Arrays.asList(lock.notAdmin.split(",")));
+        String id = not.get(0);
+        not.remove(0);
+        lock.notAdmin = (not.size() > 0) ? buildStringFromList(not) : "";
+        lock.admin = (lock.admin.length() > 0) ? add_id_to_string(lock.admin, id) : id;
+        return lock;
+    }
+
+    //make specific user admin
+    private static Lock makeAdmin(Lock lock, String uId) {
+        return null;
+    }
+
     //INTERFACES:
     public interface UpdateUi {
         void Success();
@@ -472,7 +551,7 @@ public class FireBase {
     public interface FindLock {
         void found(House house, Lock lock);
 
-        void notFound();
+        void notFound(String lId);
     }
 
 

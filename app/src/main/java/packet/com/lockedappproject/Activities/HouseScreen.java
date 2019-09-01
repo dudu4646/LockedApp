@@ -140,6 +140,7 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
                     Snackbar.make(view, ((arr.size() == 0) ? R.string.nothingToDelete : R.string.manyToDelete), Snackbar.LENGTH_LONG).show();
                 else {
                     Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
+                    intent.putExtra("houseId",house.id);
                     intent.putExtra("lockName", arr.get(0).name);
                     intent.putExtra("status", 4);
                     startActivityForResult(intent,1);
@@ -201,6 +202,8 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
             startActivity(getIntent());
             overridePendingTransition(0, 0);
         }
+        else
+            FireBase.deleteTemp();
     }
 }
 

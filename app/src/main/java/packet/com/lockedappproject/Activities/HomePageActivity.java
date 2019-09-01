@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -70,4 +71,12 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
         intent.putExtra("houseName", house.name);
         startActivity(intent);
     }
+
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        FireBase.deleteTemp();
+    }
+
 }

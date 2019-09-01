@@ -185,6 +185,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:checked="true"
+            android:clickable="false"
             app:layout_constraintBottom_toBottomOf="@+id/textView6"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView6"
@@ -228,7 +230,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:text="Set ad Admin:"
+            android:text="Set as Admin:"
             android:textSize="14sp"
             app:layout_constraintBaseline_toBaselineOf="@+id/newLockName"
             app:layout_constraintStart_toEndOf="@+id/newLockName" />
@@ -256,13 +258,13 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
-                android:id="@+id/addHouseStreet"
+                android:id="@+id/addHouseCity"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:ems="10"
-                android:hint="Street:"
+                android:hint="City:"
                 android:inputType="textPersonName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -279,8 +281,8 @@
                 android:inputType="textPersonName"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/addHouseStreet"
-                app:layout_constraintTop_toBottomOf="@+id/addHouseStreet" />
+                app:layout_constraintStart_toStartOf="@+id/addHouseCity"
+                app:layout_constraintTop_toBottomOf="@+id/addHouseCity" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
