@@ -30,7 +30,7 @@ import packet.com.lockedappproject.models.House;
 import packet.com.lockedappproject.models.Lock;
 import packet.com.lockedappproject.models.User;
 
-public class DialogActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class DialogActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener ,FireBase.FindLock {
 
     private Button ok, cancel;
     private ConstraintLayout takenLayout, foundLayout, newLockLayout, dltLockLayout, newHouseLayout;
@@ -217,7 +217,8 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
                 ok.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(DialogActivity.this, "שליחת בקשה לאדמינים של המנעול", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(DialogActivity.this, "Request was sent to the lock Admins", Toast.LENGTH_SHORT).show();
+                        FireBase.searchGeneralLock(getIntent().getStringExtra("lockId"),DialogActivity.this);
                         finish();
                     }
                 });
@@ -322,4 +323,14 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
         FireBase.addNewLock(lock, house);
     }
 
+    @Override
+    public void found(House house, Lock lock) {
+        System.out.println("testing ---> Dialog.found() starts");
+        FireBase.AddReq(house,lock);
+    }
+
+    @Override
+    public void notFound(String lId) {
+
+    }
 }

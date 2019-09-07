@@ -27,15 +27,15 @@ public class FireBase {
 
     private static FirebaseDatabase db = FirebaseDatabase.getInstance();
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private static DatabaseReference ref = null, userRef = null, houseRef = null, lockRef = null;
+    private static DatabaseReference ref = null, userRef = null, houseRef = null, lockRef = null,reqRef=null;
     private static User user = null;
     private static ArrayList<Lock> userLocks;
     private static ArrayList<House> userHouses;
-    private static HashMap<String, String> nicks;
+    private static HashMap<String,Req> requests;
+    private static HashMap<String, User> nicks;
     private static ArrayList<UpdateHouseData> updateHouse = new ArrayList<>();
     private static ArrayList<UpdateLockData> updateLocks = new ArrayList<>();
-    private static String tempLock="";
-
+    private static  ArrayList<UpdateRequests> updateRequests = new ArrayList<>();
 
     //LISTENERS:
     private static ValueEventListener userListener = new ValueEventListener() {
@@ -164,6 +164,48 @@ public class FireBase {
 
         }
     };
+    private static ChildEventListener reqListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            System.out.println("testing ---> reqListener added");
+            Req req = dataSnapshot.getValue(Req.class);
+            if(req.getToUsers().contains(getUid()))
+                requests.put(dataSnapshot.getKey(),req);
+            for(UpdateRequests u:updateRequests)
+                u.Notify(requests.size());
+        }
+
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            System.out.println("testing ---> reqListener changed");
+            if(requests.containsKey(dataSnapshot.getKey())){
+                Req r = dataSnapshot.getValue(Req.class);
+                if(!r.getToUsers().contains(getUid()))
+                    requests.remove(dataSnapshot.getKey());
+                for(UpdateRequests u:updateRequests)
+                    u.Notify(requests.size());
+            }
+        }
+
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            System.out.println("testing ---> reqListener removed");
+            if(requests.containsKey(dataSnapshot.getKey()))
+                requests.remove(dataSnapshot.getKey());
+            for(UpdateRequests u:updateRequests)
+                u.Notify(requests.size());
+        }
+
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
 
     //GETTERS:
     //get current user
@@ -220,15 +262,30 @@ public class FireBase {
     //get lock from list by id
     public static Lock getLockByStr(String id) {
         for (Lock lock : userLocks)
-            if (lock.name.equalsIgnoreCase(id))
+            if (lock.id.equalsIgnoreCase(id))
                 return lock;
         return null;
     }
 
     //get user email from nick
     public static String getEmailFromNick(String nick) {
-        if (nicks.containsKey(nick))
-            return nicks.get(nick);
+        for(String uId:nicks.keySet()){
+            User user = nicks.get(uId);
+            if (user.nick.equalsIgnoreCase(nick))
+                return user.email;
+        }
+        return null;
+    }
+
+    //get Requests
+    public static HashMap<String, Req> getRequests() {
+        return requests;
+    }
+
+    //get another user
+    public static User getAnotherUser(String key){
+        if (nicks.containsKey(key))
+            return nicks.get(key);
         return null;
     }
 
@@ -260,6 +317,7 @@ public class FireBase {
     private static void download() {
         userHouses = new ArrayList<>();
         userLocks = new ArrayList<>();
+        requests = new HashMap<>();
         if (houseRef != null) {
             houseRef.removeEventListener(houseListener);
             lockRef.removeEventListener(lockListener);
@@ -268,6 +326,8 @@ public class FireBase {
         houseRef.addChildEventListener(houseListener);
         lockRef = db.getReference("locks");
         lockRef.addChildEventListener(lockListener);
+        reqRef= db.getReference("req");
+        reqRef.addChildEventListener(reqListener);
 
     }
 
@@ -279,19 +339,19 @@ public class FireBase {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 User u = dataSnapshot.getValue(User.class);
-                nicks.put(u.nick, u.email);
+                nicks.put(dataSnapshot.getKey(), u);
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                nicks.put(dataSnapshot.getKey(),dataSnapshot.getValue(User.class));
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 User u = dataSnapshot.getValue(User.class);
-                if (nicks.containsKey(u.nick))
-                    nicks.remove(u.nick);
+                if (nicks.containsKey(dataSnapshot.getKey()))
+                    nicks.remove(dataSnapshot.getKey());
             }
 
             @Override
@@ -335,6 +395,23 @@ public class FireBase {
             updateLocks.add(adapter);
     }
 
+    //add listener for requests updates
+    public static void addToRequestsUpdates(UpdateRequests u){
+        int place = updateRequests.indexOf(u);
+        if (place>-1)
+            updateRequests.set(place,u);
+        else
+            updateRequests.add(u);
+    }
+
+    //remove listener for Requests updates
+    public static void removeFromRequestsUpdates(UpdateRequests u){
+        System.out.println("testing remove request updates before = "+updateRequests.size());
+//        if (updateRequests.contains(u))
+        updateRequests.remove(u);
+        System.out.println("testing remove request updates after = "+updateRequests.size());
+    }
+
     //remove listener for locks updates
     public static void removeFromUpdateLock(UpdateLockData adapter) {
         if (updateLocks.contains(adapter))
@@ -350,6 +427,7 @@ public class FireBase {
 
     //looking for specific lock in all DB
     public static void searchGeneralLock(final String lId, final FindLock cb) {
+        System.out.println("testing ---> FireBase.searchGeneralLock() starts");
         houseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -370,26 +448,30 @@ public class FireBase {
 
             }
         });
+        System.out.println("testing ---> FireBase.searchGeneralLock() ends");
     }
 
     //deleting lock process
     public static void deleteLock(String lName, String hId) {
         //טיפול במנעול
         Lock lock = getLockByStr(lName);
+        //אם היוזר אדמין
         if (lock.admin.contains(getUid())) {
             lock.admin = deleteUid(lock.admin);
-            if (lock.admin.length() == 0) {
-                if (lock.notAdmin.length() > 0)
-                    lock = makeAdmin(lock);
-                else
+            if (lock.admin.equalsIgnoreCase("")) {
+                if (lock.notAdmin.equalsIgnoreCase("")) {
                     lockRef.child(lock.id).removeValue();
+                }
+                else {
+                    lock = makeAdmin(lock);
+                }
             }
         }
-        else
+        else { //יוזר רגיל
             lock.notAdmin = deleteUid(lock.notAdmin);
-
-        //עדכון המנעול ב- FB
-        lockRef.child(lock.id).setValue(lock);
+            //עדכון המנעול ב- FB
+            lockRef.child(lock.id).setValue(lock);
+        }
         //בדיקה אם צריך למחוק את המנעול
         boolean flg = (lock.admin.equalsIgnoreCase(""))&&lock.notAdmin.equalsIgnoreCase("");
 
@@ -413,6 +495,7 @@ public class FireBase {
         //עדכון היוזר - מחיקת המנעול
         User user = getUser();
         arr = new ArrayList<>(Arrays.asList(user.lockList.split(",")));
+        System.out.println("testing ---> FireBae - deleteLock() - עדכון יוזר - arr.size() "+arr.size());
         arr.remove(lock.id);
         user.lockList = (arr.size() > 0) ? buildStringFromList(arr) : "";
         //בדיקה אם צריך למחוק את הבית
@@ -444,18 +527,10 @@ public class FireBase {
         lockRef.child(lock.id).setValue(lock);
     }
 
-    //adding temp lock to prevent overlapping
-    public static void addTemp(String lId){
-        lockRef.child(lId).setValue(new Lock("","","","",""));
-        tempLock = lId;
-    }
-
-    //deleting temp lock
-    public static void deleteTemp(){
-        if (!tempLock.equalsIgnoreCase("")){
-            lockRef.child(tempLock).removeValue();
-            tempLock="";
-        }
+    //adding req to DB
+    public static void AddReq(House house, Lock lock) {
+        System.out.println("testing ---> FireBase.addReq() starts");
+        reqRef.push().setValue(new Req(lock.id,house.id,getUid(),lock.admin));
     }
 
     //PRIVATE METHODS:
@@ -488,7 +563,7 @@ public class FireBase {
 
     //finding lock in the all DB
     private static void findLockInDB(final String str, final House house, final FindLock cb) {
-        System.out.println("testing --> house = " + house.name + " lock = " + str);
+        System.out.println("testing -->   FireBase.findLockInDB():  house = " + house.name + " lock = " + str);
         lockRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -533,6 +608,10 @@ public class FireBase {
         return null;
     }
 
+    public static String getReqNum() {
+        return requests.size()>0?requests.size()+"":"";
+    }
+
     //INTERFACES:
     public interface UpdateUi {
         void Success();
@@ -554,5 +633,7 @@ public class FireBase {
         void notFound(String lId);
     }
 
-
+    public interface UpdateRequests {
+        void Notify(int size);
+    }
 }
