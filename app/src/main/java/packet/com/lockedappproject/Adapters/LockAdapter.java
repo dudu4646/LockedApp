@@ -72,6 +72,7 @@ public class LockAdapter extends ArrayAdapter implements FireBase.UpdateLockData
 
     @Override
     public void Notify() {
+        System.out.println("testing ---> "+getClass().getName()+" Notify() activated");
         Log.d(TAG, "Notify: for locks called");
         House house = FireBase.getOneHouse(inHouse);
         locks = FireBase.getLockFromList(house.locks);

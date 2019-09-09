@@ -24,4 +24,6 @@
     <string name="nothingToDelete">First you need to choose one lock to delete</string>
     <string name="dltMsg">Are you sure you want to delete:</string>
     <string name="dltAlert">This action can not be undone!!!</string>
+    <string name="empty">You\'re not register\nTo any lock\nPress on</string>
+    <string name="empt2">To add a new Lock</string>
 </resources>

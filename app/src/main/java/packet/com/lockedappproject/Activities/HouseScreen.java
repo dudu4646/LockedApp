@@ -44,12 +44,12 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
 
         //House + adapt
         house = FireBase.getOneHouse(getIntent().getStringExtra("houseId"));
-        if (house==null) {
-            overridePendingTransition(0, 0);
-            startActivity(new Intent(getApplicationContext(),HomePageActivity.class));
-            overridePendingTransition(0, 0);
-            finish();
-        }
+//        if (house==null) {
+////            overridePendingTransition(0, 0);
+////            overridePendingTransition(0, 0);
+//            HouseScreen.this.finishAffinity();
+//            startActivity(new Intent(getApplicationContext(),HomePageActivity.class));
+//        }
         System.out.println("testing ---> HouseScreen houseId = "+house);
         adapt = new HouseScreenAdapt(getApplicationContext(), house.locks, this);
         //TextView
@@ -203,14 +203,15 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
-            finish();
-            if (house != null) {
-                overridePendingTransition(0, 0);
-                startActivity(getIntent());
-                overridePendingTransition(0, 0);
-            }
+        house = FireBase.getOneHouse(house.id);
+        if (house != null){
+            Intent intent = new Intent(getApplicationContext(),HouseScreen.class);
+            intent.putExtra("houseId",house.id);
+            overridePendingTransition(0, 0);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
         }
+        finish();
     }
 }
 

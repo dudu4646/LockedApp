@@ -27,21 +27,23 @@ public class FireBase {
 
     private static FirebaseDatabase db = FirebaseDatabase.getInstance();
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private static DatabaseReference ref = null, userRef = null, houseRef = null, lockRef = null,reqRef=null;
+    private static DatabaseReference ref = null, userRef = null, houseRef = null, lockRef = null, reqRef = null;
     private static User user = null;
     private static ArrayList<Lock> userLocks;
     private static ArrayList<House> userHouses;
-    private static HashMap<String,Req> requests;
-    private static HashMap<String, User> nicks;
+    private static HashMap<String, Req> requests;
+    private static HashMap<String, User> users;
     private static ArrayList<UpdateHouseData> updateHouse = new ArrayList<>();
     private static ArrayList<UpdateLockData> updateLocks = new ArrayList<>();
-    private static  ArrayList<UpdateRequests> updateRequests = new ArrayList<>();
+    private static ArrayList<UpdateRequests> updateRequests = new ArrayList<>();
 
     //LISTENERS:
     private static ValueEventListener userListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            System.out.println("testing ---> user listener activated");
             user = dataSnapshot.getValue(User.class);
+            download();
         }
 
         @Override
@@ -52,19 +54,25 @@ public class FireBase {
     private static ChildEventListener lockListener = new ChildEventListener() {
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            System.out.println("testing ---> user lock activated: new lock added");
             Lock lock = dataSnapshot.getValue(Lock.class);
             if (user.lockList.contains(lock.id)) {
+                System.out.println("testing ---> userLocks size = " + userLocks.size());
                 userLocks.add(lock);
+                System.out.println("testing ---> userLocks size = " + userLocks.size());
                 Collections.sort(userLocks);
-                for (UpdateLockData u : updateLocks)
+                for (UpdateLockData u : updateLocks) {
+                    System.out.println("testing ---> notify to " + u.getClass().getName());
                     u.Notify();
+                }
             }
         }
 
         @Override
         public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            System.out.println("testing ---> user lock activated: lock changed");
+            System.out.println("testing ---> userLocks size = " + userLocks.size());
             Lock lock = dataSnapshot.getValue(Lock.class);
-
             if (lock.admin.contains(mAuth.getUid()) || lock.notAdmin.contains(mAuth.getUid())) {
                 int i;
                 for (i = 0; i < userLocks.size() && !userLocks.get(i).id.equalsIgnoreCase(lock.id); i++)
@@ -79,22 +87,30 @@ public class FireBase {
                 if (i < userLocks.size())
                     userLocks.remove(i);
             }
+            System.out.println("testing ---> userLocks size = " + userLocks.size());
             Collections.sort(userLocks);
-            for (UpdateLockData u : updateLocks)
+            for (UpdateLockData u : updateLocks) {
+                System.out.println("testing ---> notify to " + u.getClass().getName());
                 u.Notify();
+            }
         }
 
         @Override
         public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            System.out.println("testing ---> user lock activated: lock removed");
+            System.out.println("testing ---> userLocks size = " + userLocks.size());
             Lock lock = dataSnapshot.getValue(Lock.class);
             int i;
             for (i = 0; i < userLocks.size() && !userLocks.get(i).id.equalsIgnoreCase(lock.id); i++)
                 ;
             if (i < userLocks.size()) {
                 userLocks.remove(i);
-                for (UpdateLockData u : updateLocks)
+                for (UpdateLockData u : updateLocks) {
+                    System.out.println("testing ---> notify to " + u.getClass().getName());
                     u.Notify();
+                }
             }
+            System.out.println("testing ---> userLocks size = " + userLocks.size());
         }
 
         @Override
@@ -110,17 +126,24 @@ public class FireBase {
     private static ChildEventListener houseListener = new ChildEventListener() {
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            System.out.println("testing ---> user house activated: new house added");
+            System.out.println("testing ---> houseList size = " + userHouses.size());
             House house = dataSnapshot.getValue(House.class);
             if (user.houseList.contains(house.id)) {
                 userHouses.add(house);
                 Collections.sort(userHouses);
-                for (UpdateHouseData u : updateHouse)
+                for (UpdateHouseData u : updateHouse) {
+                    System.out.println("testing ---> notify to " + u.getClass().getName());
                     u.Notify();
+                }
             }
+            System.out.println("testing ---> houseList size = " + userHouses.size());
         }
 
         @Override
         public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            System.out.println("testing ---> user lock activated: house changed");
+            System.out.println("testing ---> houseList size = " + userHouses.size());
             House house = dataSnapshot.getValue(House.class);
             if (house.admin.contains(mAuth.getUid())) {
                 int i;
@@ -137,21 +160,29 @@ public class FireBase {
                     userLocks.remove(i);
             }
             Collections.sort(userHouses);
-            for (UpdateHouseData u : updateHouse)
+            for (UpdateHouseData u : updateHouse) {
+                System.out.println("testing ---> notify to " + u.getClass().getName());
                 u.Notify();
+            }
+            System.out.println("testing ---> houseList size = " + userHouses.size());
         }
 
         @Override
         public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            System.out.println("testing ---> user lock activated: house removed");
+            System.out.println("testing ---> houseList size = " + userHouses.size());
             House house = dataSnapshot.getValue(House.class);
             int i;
             for (i = 0; i < userHouses.size() && !userHouses.get(i).id.equalsIgnoreCase(house.id); i++)
                 ;
             if (i < userHouses.size()) {
                 userHouses.remove(i);
-                for (UpdateHouseData u : updateHouse)
+                for (UpdateHouseData u : updateHouse) {
+                    System.out.println("testing ---> notify to " + u.getClass().getName());
                     u.Notify();
+                }
             }
+            System.out.println("testing ---> houseList size = " + userHouses.size());
         }
 
         @Override
@@ -168,32 +199,44 @@ public class FireBase {
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
             System.out.println("testing ---> reqListener added");
+            System.out.println("testing ---> requests size = " + requests.size());
             Req req = dataSnapshot.getValue(Req.class);
-            if(req.getToUsers().contains(getUid()))
-                requests.put(dataSnapshot.getKey(),req);
-            for(UpdateRequests u:updateRequests)
+            if (req.getToUsers().contains(getUid()))
+                requests.put(dataSnapshot.getKey(), req);
+            for (UpdateRequests u : updateRequests) {
+                System.out.println("testing ---> notify to " + u.getClass().getName());
                 u.Notify(requests.size());
+            }
+            System.out.println("testing ---> requests size = " + requests.size());
         }
 
         @Override
         public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
             System.out.println("testing ---> reqListener changed");
-            if(requests.containsKey(dataSnapshot.getKey())){
+            System.out.println("testing ---> requests size = " + requests.size());
+            if (requests.containsKey(dataSnapshot.getKey())) {
                 Req r = dataSnapshot.getValue(Req.class);
-                if(!r.getToUsers().contains(getUid()))
+                if (!r.getToUsers().contains(getUid()))
                     requests.remove(dataSnapshot.getKey());
-                for(UpdateRequests u:updateRequests)
+                for (UpdateRequests u : updateRequests) {
+                    System.out.println("testing ---> notify to " + u.getClass().getName());
                     u.Notify(requests.size());
+                }
             }
+            System.out.println("testing ---> requests size = " + requests.size());
         }
 
         @Override
         public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
             System.out.println("testing ---> reqListener removed");
-            if(requests.containsKey(dataSnapshot.getKey()))
+            System.out.println("testing ---> requests size = " + requests.size());
+            if (requests.containsKey(dataSnapshot.getKey()))
                 requests.remove(dataSnapshot.getKey());
-            for(UpdateRequests u:updateRequests)
+            for (UpdateRequests u : updateRequests) {
+                System.out.println("testing ---> notify to " + u.getClass().getName());
                 u.Notify(requests.size());
+            }
+            System.out.println("testing ---> requests size = " + requests.size());
         }
 
         @Override
@@ -260,17 +303,17 @@ public class FireBase {
     }
 
     //get lock from list by id
-    public static Lock getLockByStr(String id) {
+    public static Lock getLockByStr(String str) {
         for (Lock lock : userLocks)
-            if (lock.id.equalsIgnoreCase(id))
+            if (lock.id.equalsIgnoreCase(str) || lock.name.equalsIgnoreCase(str))
                 return lock;
         return null;
     }
 
     //get user email from nick
     public static String getEmailFromNick(String nick) {
-        for(String uId:nicks.keySet()){
-            User user = nicks.get(uId);
+        for (String uId : users.keySet()) {
+            User user = users.get(uId);
             if (user.nick.equalsIgnoreCase(nick))
                 return user.email;
         }
@@ -279,13 +322,13 @@ public class FireBase {
 
     //get Requests
     public static HashMap<String, Req> getRequests() {
-        return requests;
+        return (requests != null && requests.size() > 0) ? requests : null;
     }
 
     //get another user
-    public static User getAnotherUser(String key){
-        if (nicks.containsKey(key))
-            return nicks.get(key);
+    public static User getAnotherUser(String key) {
+        if (users.containsKey(key))
+            return users.get(key);
         return null;
     }
 
@@ -315,6 +358,7 @@ public class FireBase {
 
     //Download data
     private static void download() {
+        System.out.println("testing ---> download() starts");
         userHouses = new ArrayList<>();
         userLocks = new ArrayList<>();
         requests = new HashMap<>();
@@ -326,32 +370,32 @@ public class FireBase {
         houseRef.addChildEventListener(houseListener);
         lockRef = db.getReference("locks");
         lockRef.addChildEventListener(lockListener);
-        reqRef= db.getReference("req");
+        reqRef = db.getReference("req");
         reqRef.addChildEventListener(reqListener);
-
+        System.out.println("testing ---> download() ends");
     }
 
-    //download all the users nicks
+    //download all the users users
     public static void getNicks() {
-        nicks = new HashMap<>();
+        users = new HashMap<>();
         ref = db.getReference("users");
         ref.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 User u = dataSnapshot.getValue(User.class);
-                nicks.put(dataSnapshot.getKey(), u);
+                users.put(dataSnapshot.getKey(), u);
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                nicks.put(dataSnapshot.getKey(),dataSnapshot.getValue(User.class));
+                users.put(dataSnapshot.getKey(), dataSnapshot.getValue(User.class));
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 User u = dataSnapshot.getValue(User.class);
-                if (nicks.containsKey(dataSnapshot.getKey()))
-                    nicks.remove(dataSnapshot.getKey());
+                if (users.containsKey(dataSnapshot.getKey()))
+                    users.remove(dataSnapshot.getKey());
             }
 
             @Override
@@ -368,54 +412,80 @@ public class FireBase {
 
     //checking if nick is taken
     public static boolean checkNick(String s) {
-        return nicks.containsKey(s);
+        return users.containsKey(s);
     }
 
     //add listener for houses updates
     public static void addToUpdateHouse(UpdateHouseData adapter) {
+        System.out.println("testing ---> addToUpdateHouse() called");
+        System.out.println("testing ---> updateHouse size = " + updateHouse.size());
+        System.out.println("testing ---> adding " + adapter.getClass().getName());
         int place = updateHouse.indexOf(adapter);
         if (place > -1)
             updateHouse.set(place, adapter);
         else
             updateHouse.add(adapter);
+        System.out.println("testing ---> updateHouse size = " + updateHouse.size());
     }
 
     //remove listener for houses updates
     public static void removeFromUpdateHouse(UpdateHouseData adapter) {
-        if (updateHouse.contains(adapter))
+        System.out.println("testing ---> removeFromUpdateHouse() called");
+        System.out.println("testing ---> updateHouse size = " + updateHouse.size());
+        System.out.println("testing ---> removing " + adapter.getClass().getName());
+        int place = updateHouse.indexOf(adapter);
+        if (updateHouse.contains(adapter)) {
             updateHouse.remove(adapter);
+            System.out.println("testing ---> updateHouse size = " + updateHouse.size());
+        }
     }
 
     //add listener for locks updates
     public static void addToUpdateLocks(UpdateLockData adapter) {
+        System.out.println("testing ---> addToUpdateLocks() called");
+        System.out.println("testing ---> updateLocks size = " + updateHouse.size());
+        System.out.println("testing ---> adding " + adapter.getClass().getName());
         int place = updateLocks.indexOf(adapter);
         if (place > -1)
             updateLocks.set(place, adapter);
         else
             updateLocks.add(adapter);
-    }
-
-    //add listener for requests updates
-    public static void addToRequestsUpdates(UpdateRequests u){
-        int place = updateRequests.indexOf(u);
-        if (place>-1)
-            updateRequests.set(place,u);
-        else
-            updateRequests.add(u);
-    }
-
-    //remove listener for Requests updates
-    public static void removeFromRequestsUpdates(UpdateRequests u){
-        System.out.println("testing remove request updates before = "+updateRequests.size());
-//        if (updateRequests.contains(u))
-        updateRequests.remove(u);
-        System.out.println("testing remove request updates after = "+updateRequests.size());
+        System.out.println("testing ---> updateLocks size = " + updateHouse.size());
     }
 
     //remove listener for locks updates
     public static void removeFromUpdateLock(UpdateLockData adapter) {
-        if (updateLocks.contains(adapter))
+        System.out.println("testing ---> removeFromUpdateLock() called");
+        System.out.println("testing ---> updateHouse size = " + updateLocks.size());
+        System.out.println("testing ---> removing " + adapter.getClass().getName());
+        if (updateLocks.contains(adapter)) {
             updateLocks.remove(adapter);
+            System.out.println("testing ---> updateHouse size = " + updateLocks.size());
+        }
+    }
+
+    //add listener for requests updates
+    public static void addToRequestsUpdates(UpdateRequests u) {
+        System.out.println("testing ---> addToRequestsUpdates() called");
+        System.out.println("testing ---> updateRequests size = " + updateHouse.size());
+        System.out.println("testing ---> adding " + u.getClass().getName());
+        int place = updateRequests.indexOf(u);
+        if (place > -1)
+            updateRequests.set(place, u);
+        else
+            updateRequests.add(u);
+        System.out.println("testing ---> updateRequests size = " + updateHouse.size());
+    }
+
+    //remove listener for Requests updates
+    public static void removeFromRequestsUpdates(UpdateRequests u) {
+        System.out.println("testing ---> removeFromRequestsUpdates() called");
+        System.out.println("testing ---> updateHouse size = " + updateLocks.size());
+        System.out.println("testing ---> removing " + u.getClass().getName());
+        System.out.println("testing remove request updates before = " + updateRequests.size());
+//        if (updateRequests.contains(u))
+        updateRequests.remove(u);
+        System.out.println("testing remove request updates after = " + updateRequests.size());
     }
 
     //changing lock status
@@ -453,6 +523,7 @@ public class FireBase {
 
     //deleting lock process
     public static void deleteLock(String lName, String hId) {
+        User user = getUser();
         //טיפול במנעול
         Lock lock = getLockByStr(lName);
         //אם היוזר אדמין
@@ -461,19 +532,17 @@ public class FireBase {
             if (lock.admin.equalsIgnoreCase("")) {
                 if (lock.notAdmin.equalsIgnoreCase("")) {
                     lockRef.child(lock.id).removeValue();
-                }
-                else {
+                } else {
                     lock = makeAdmin(lock);
                 }
             }
-        }
-        else { //יוזר רגיל
+        } else { //יוזר רגיל
             lock.notAdmin = deleteUid(lock.notAdmin);
             //עדכון המנעול ב- FB
             lockRef.child(lock.id).setValue(lock);
         }
         //בדיקה אם צריך למחוק את המנעול
-        boolean flg = (lock.admin.equalsIgnoreCase(""))&&lock.notAdmin.equalsIgnoreCase("");
+        boolean flg = (lock.admin.equalsIgnoreCase("")) && lock.notAdmin.equalsIgnoreCase("");
 
         //טיפול בבית - אם צריך למחוק ממנו את המנעול
         House house = getOneHouse(hId);
@@ -486,6 +555,10 @@ public class FireBase {
                 //מחיקת הבית מ- FB
                 houseRef.child(house.id).removeValue();
             else {
+                //בדיקה אם יש עוד מנעולים מאותו בית
+                flg = false;
+                for(int i=0;i<arr.size() && !flg;i++)
+                    flg = user.lockList.contains(arr.get(i));
                 //מחיקת המנעול מהבית ועדכון ב FB
                 house.locks = buildStringFromList(arr);
                 houseRef.child(house.id).setValue(house);
@@ -493,13 +566,13 @@ public class FireBase {
         }
 
         //עדכון היוזר - מחיקת המנעול
-        User user = getUser();
         arr = new ArrayList<>(Arrays.asList(user.lockList.split(",")));
-        System.out.println("testing ---> FireBae - deleteLock() - עדכון יוזר - arr.size() "+arr.size());
+        System.out.println("testing ---> FireBae - deleteLock() - עדכון יוזר - arr.size() " + arr.size());
         arr.remove(lock.id);
         user.lockList = (arr.size() > 0) ? buildStringFromList(arr) : "";
-        //בדיקה אם צריך למחוק את הבית
-        if (house.locks.equalsIgnoreCase("")) {
+
+        //בדיקה אם צריך למחוק את הבית מהמשתמש
+        if (house.locks.equalsIgnoreCase("") || !flg) {
             arr = new ArrayList<>(Arrays.asList(user.houseList.split(",")));
             //מחיקת הבית מהרשומה ביוזר
             arr.remove(house.id);
@@ -519,7 +592,7 @@ public class FireBase {
         if (house.id == null || house.id.length() == 0) {
             ref = houseRef.push();
             house.id = ref.getKey();
-            user.houseList = add_id_to_string(user.houseList,house.id);
+            user.houseList = add_id_to_string(user.houseList, house.id);
         }
         //כתיבת המידע
         userRef.setValue(user);
@@ -530,23 +603,65 @@ public class FireBase {
     //adding req to DB
     public static void AddReq(House house, Lock lock) {
         System.out.println("testing ---> FireBase.addReq() starts");
-        reqRef.push().setValue(new Req(lock.id,house.id,getUid(),lock.admin));
+        reqRef.push().setValue(new Req(lock.id, house.id, getUid(), lock.admin));
+    }
+
+    //updating ReqNum text
+    public static String getReqNum() {
+        return (requests != null && requests.size() > 0) ? requests.size() + "" : "";
+    }
+
+    //approve request
+    public static void apprvReq(String houseId, String lockId, boolean admin, String reqId) {
+        House house = getOneHouse(houseId);
+        Lock lock = getLockByStr(lockId);
+        Req req = requests.get(reqId);
+        User user = users.get(req.getFromUser());
+
+        //עדכון המנעול
+        if (admin)
+            lock.admin = add_id_to_string(lock.admin, req.getFromUser());
+        else
+            lock.notAdmin = add_id_to_string(lock.notAdmin, req.getFromUser());
+        lockRef.child(lock.id).setValue(lock);
+        user.lockList = add_id_to_string(user.lockList, lockId);
+
+        //בדיקה ועדכון הבית והמשתמש לפי הצורך
+        if (!user.houseList.contains(houseId)) {
+            house.admin = add_id_to_string(house.admin, req.getFromUser());
+            houseRef.child(houseId).setValue(house);
+            user.houseList = add_id_to_string(user.houseList, houseId);
+        }
+
+        //עדכון המשתמש
+        db.getReference().child("users").child(req.getFromUser()).setValue(user);
+
+        //מחיקת הבקשה
+        dltReq(reqId);
+    }
+
+    //reject request
+    public static void rjctReq(String reqId) {
+        Req req = requests.get(reqId);
+        req.setToUsers(remove_id_from_string(req.getToUsers(), getUid()));
+        if (req.getToUsers().equalsIgnoreCase(""))
+            dltReq(reqId);
+        else
+            reqRef.child(reqId).setValue(req);
     }
 
     //PRIVATE METHODS:
     //add id to string
     private static String add_id_to_string(String src, String id) {
         src += (src.length() > 0) ? "," + id : id;
-//        ArrayList<String> arr = new ArrayList<>(Arrays.asList(src.split(",")));
-//        Collections.sort(arr);
-//        String s = "";
-//        for (int i = 0; i < arr.size(); i++)
-//            if (i == 0)
-//                s = arr.get(i);
-//            else
-//                s += "," + arr.get(i);
-//        return s;
         return buildStringFromList(Arrays.asList(src.split(",")));
+    }
+
+    //remove id from String
+    private static String remove_id_from_string(String src, String id) {
+        List<String> list = new ArrayList<>(Arrays.asList(src.split(",")));
+        list.remove(id);
+        return buildStringFromList(list);
     }
 
     //build string from list (sort + adding ",")
@@ -608,8 +723,9 @@ public class FireBase {
         return null;
     }
 
-    public static String getReqNum() {
-        return requests.size()>0?requests.size()+"":"";
+    //delete request
+    private static void dltReq(String reqId) {
+        reqRef.child(reqId).removeValue();
     }
 
     //INTERFACES:

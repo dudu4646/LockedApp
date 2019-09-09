@@ -84,6 +84,7 @@ public class HouseScreenAdapt extends RecyclerView.Adapter<HouseScreenAdapt.Lock
 
     @Override
     public void Notify() {
+        System.out.println("testing ---> "+getClass().getName()+" Notify() activated");
         this.locks = FireBase.getLockFromList(lockStr);
         notifyDataSetChanged();
     }

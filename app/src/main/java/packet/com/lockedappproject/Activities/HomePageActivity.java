@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
@@ -24,7 +27,7 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
     private List<House> houseList;
     private HouseCard adapt;
     private ConstraintLayout newLockLayout;
-    private CardView reqCard;
+    private CardView reqCard,blueCard;
     private TextView reqNum;
 
     @Override
@@ -38,6 +41,7 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
         cardsView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false));
         cardsView.setAdapter(adapt);
         newLockLayout = findViewById(R.id.NewLockLayout);
+
         newLockLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -47,21 +51,33 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
             }
         });
         reqNum = findViewById(R.id.reqNum);
-        reqNum.setText(FireBase.getReqNum());
+        blueCard = findViewById(R.id.blueCard);
+        blueCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "לבנות עמוד התחברות עם bluetooth", Toast.LENGTH_SHORT).show();
+            }
+        });
         reqCard = findViewById(R.id.reqCard);
         reqCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), RequestsActivity.class));
+                if (reqNum.getText().toString().equalsIgnoreCase(""))
+                    Snackbar.make(view, "You don't have any Requests waiting", Snackbar.LENGTH_SHORT).show();
+                else
+                    startActivity(new Intent(getApplicationContext(), RequestsActivity.class));
             }
         });
     }
 
     @Override
-    protected void onStart() {
-        FireBase.addToUpdateHouse(adapt);
+    protected void onResume() {
+        System.out.println("testing ---> onResume() called --- UpdateHouse()");
         FireBase.addToRequestsUpdates(this);
-        super.onStart();
+        FireBase.addToUpdateHouse(adapt);
+        adapt.Notify();
+        reqNum.setText(FireBase.getReqNum());
+        super.onResume();
     }
 
     @Override
@@ -87,11 +103,11 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
         startActivity(intent);
     }
 
+
     @Override
     public void Notify(int size) {
-        System.out.println("testing ---> Notify called");
-        System.out.println("testing ---> srtNum ---> size = "+size);
+        System.out.println("testing ---> " + getClass().getName() + " Notify() called");
+        System.out.println("testing ---> srtNum ---> size = " + size);
         reqNum.setText((size > 0) ? size + "" : "");
     }
-
 }

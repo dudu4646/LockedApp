@@ -1,16 +1,16 @@
 package packet.com.lockedappproject.Activities;
 
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.Bundle;
 
 import packet.com.lockedappproject.Adapters.ReqAdapter;
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
 
-public class RequestsActivity extends AppCompatActivity {
+public class RequestsActivity extends AppCompatActivity implements ReqAdapter.CB {
 
     private RecyclerView reqList;
     private ReqAdapter reqAdapter;
@@ -21,7 +21,7 @@ public class RequestsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_requests);
 
         //Adapter
-        reqAdapter = new ReqAdapter(getApplicationContext());
+        reqAdapter = new ReqAdapter(getApplicationContext(), this);
 
         //RecycleView
         reqList = findViewById(R.id.reqList);
@@ -40,5 +40,10 @@ public class RequestsActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         FireBase.removeFromRequestsUpdates(reqAdapter);
+    }
+
+    @Override
+    public void close() {
+        finish();
     }
 }

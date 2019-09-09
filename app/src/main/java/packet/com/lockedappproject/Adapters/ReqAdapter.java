@@ -7,14 +7,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
@@ -23,28 +21,30 @@ import packet.com.lockedappproject.models.Lock;
 import packet.com.lockedappproject.models.Req;
 import packet.com.lockedappproject.models.User;
 
-public class ReqAdapter extends RecyclerView.Adapter<ReqAdapter.ReqHolder> implements FireBase.UpdateRequests{
+public class ReqAdapter extends RecyclerView.Adapter<ReqAdapter.ReqHolder> implements FireBase.UpdateRequests {
 
-    private HashMap<String,Req> list;
+    private HashMap<String, Req> list;
     private ArrayList<String> requests;
     private Context context;
+    private CB cb;
 
-    public ReqAdapter(Context context) {
+    public ReqAdapter(Context context, CB cb) {
         this.context = context;
         list = FireBase.getRequests();
         requests = new ArrayList<>(list.keySet());
+        this.cb = cb;
 
     }
 
     @NonNull
     @Override
     public ReqHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.layout_req, parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.layout_req, parent, false);
         return new ReqHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ReqHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ReqHolder holder, final int position) {
         Req req = list.get(requests.get(position));
         User user = FireBase.getAnotherUser(req.getFromUser());
         final Lock lock = FireBase.getLockByStr(req.getLockId());
@@ -54,13 +54,13 @@ public class ReqAdapter extends RecyclerView.Adapter<ReqAdapter.ReqHolder> imple
         holder.approve.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "approve was clicked\nhouse = "+house.name+"\nlock = "+lock.name, Toast.LENGTH_SHORT).show();
+                FireBase.apprvReq(house.id, lock.id, holder.admin.isChecked(), requests.get(position));
             }
         });
         holder.reject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "reject was clicked\nlock = "+lock.name, Toast.LENGTH_SHORT).show();
+                FireBase.rjctReq(requests.get(position));
             }
         });
 
@@ -73,9 +73,18 @@ public class ReqAdapter extends RecyclerView.Adapter<ReqAdapter.ReqHolder> imple
 
     @Override
     public void Notify(int size) {
+        System.out.println("testing ---> " + getClass().getName() + " Notify() called");
         list = FireBase.getRequests();
-        requests = new ArrayList<>(list.keySet());
-        notifyDataSetChanged();
+        if (list == null)
+            cb.close();
+        else {
+            requests = new ArrayList<>(list.keySet());
+            notifyDataSetChanged();
+        }
+    }
+
+    public interface CB {
+        void close();
     }
 
     public class ReqHolder extends RecyclerView.ViewHolder {
