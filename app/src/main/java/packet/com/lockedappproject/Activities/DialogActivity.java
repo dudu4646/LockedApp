@@ -325,7 +325,6 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
 
     @Override
     public void found(House house, Lock lock) {
-        System.out.println("testing ---> Dialog.found() starts");
         FireBase.AddReq(house,lock);
     }
 

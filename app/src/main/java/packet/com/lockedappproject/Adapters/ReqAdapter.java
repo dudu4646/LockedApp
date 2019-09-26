@@ -73,7 +73,6 @@ public class ReqAdapter extends RecyclerView.Adapter<ReqAdapter.ReqHolder> imple
 
     @Override
     public void Notify(int size) {
-        System.out.println("testing ---> " + getClass().getName() + " Notify() called");
         list = FireBase.getRequests();
         if (list == null)
             cb.close();

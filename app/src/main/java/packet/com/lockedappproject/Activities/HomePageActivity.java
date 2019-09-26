@@ -72,7 +72,6 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
 
     @Override
     protected void onResume() {
-        System.out.println("testing ---> onResume() called --- UpdateHouse()");
         FireBase.addToRequestsUpdates(this);
         FireBase.addToUpdateHouse(adapt);
         adapt.Notify();
@@ -82,7 +81,6 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
 
     @Override
     protected void onPause() {
-        System.out.println("testing ---> onPause called");
         super.onPause();
         FireBase.removeFromUpdateHouse(adapt);
         FireBase.removeFromRequestsUpdates(this);
@@ -106,8 +104,6 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
 
     @Override
     public void Notify(int size) {
-        System.out.println("testing ---> " + getClass().getName() + " Notify() called");
-        System.out.println("testing ---> srtNum ---> size = " + size);
         reqNum.setText((size > 0) ? size + "" : "");
     }
 }

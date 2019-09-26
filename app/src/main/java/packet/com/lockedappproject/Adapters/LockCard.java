@@ -78,7 +78,6 @@ public class LockCard extends RecyclerView.Adapter<LockCard.CardLockHolder> impl
 
     @Override
     public void Notify() {
-        System.out.println("testing ---> "+getClass().getName()+" Notify() activated");
         locks = FireBase.getLockFromList(house.locks);
         notifyDataSetChanged();
     }

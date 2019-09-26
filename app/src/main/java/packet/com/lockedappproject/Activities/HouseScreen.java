@@ -44,13 +44,6 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
 
         //House + adapt
         house = FireBase.getOneHouse(getIntent().getStringExtra("houseId"));
-//        if (house==null) {
-////            overridePendingTransition(0, 0);
-////            overridePendingTransition(0, 0);
-//            HouseScreen.this.finishAffinity();
-//            startActivity(new Intent(getApplicationContext(),HomePageActivity.class));
-//        }
-        System.out.println("testing ---> HouseScreen houseId = "+house);
         adapt = new HouseScreenAdapt(getApplicationContext(), house.locks, this);
         //TextView
         h1 = findViewById(R.id.h1);

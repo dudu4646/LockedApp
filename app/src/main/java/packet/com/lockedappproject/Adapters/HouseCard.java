@@ -95,7 +95,6 @@ public class HouseCard extends RecyclerView.Adapter<HouseCard.CardHouseHolder> i
 
     @Override
     public void Notify() {
-        System.out.println("testing ---> HouseCard Notify() called");
         houses = FireBase.getHouses();
         notifyDataSetChanged();
     }

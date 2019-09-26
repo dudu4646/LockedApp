@@ -58,7 +58,6 @@ public class HouseAdapter extends ArrayAdapter implements FireBase.UpdateHouseDa
 
     @Override
     public void Notify() {
-        System.out.println("testing ---> HouseAdapter Notify() called");
         notifyDataSetChanged();
     }
 
