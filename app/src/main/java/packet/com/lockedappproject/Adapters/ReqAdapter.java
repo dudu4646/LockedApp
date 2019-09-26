@@ -7,13 +7,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.House;
@@ -33,7 +30,6 @@ public class ReqAdapter extends RecyclerView.Adapter<ReqAdapter.ReqHolder> imple
         list = FireBase.getRequests();
         requests = new ArrayList<>(list.keySet());
         this.cb = cb;
-
     }
 
     @NonNull
@@ -63,7 +59,6 @@ public class ReqAdapter extends RecyclerView.Adapter<ReqAdapter.ReqHolder> imple
                 FireBase.rjctReq(requests.get(position));
             }
         });
-
     }
 
     @Override

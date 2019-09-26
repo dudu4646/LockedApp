@@ -12,10 +12,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
 
@@ -109,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements FireBase.UpdateUi
         });
     }
 
-
     //setting the connection option visible
     private void activateLogin() {
         userPass.setVisibility(View.VISIBLE);
@@ -121,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements FireBase.UpdateUi
 
         //setting the last name if exists
         userInput.setText(sharedPreferences.getString("userEmail", ""));
-
         userPass.animate().alphaBy(1f).setDuration(1000);
         userEmail.animate().alphaBy(1f).setDuration(1000);
         passInput.animate().alphaBy(1f).setDuration(1000);

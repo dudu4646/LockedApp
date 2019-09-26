@@ -8,14 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
-
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.House;
@@ -100,10 +97,8 @@ public class HouseCard extends RecyclerView.Adapter<HouseCard.CardHouseHolder> i
     }
 
     public interface Go_Add_To {
-
         void goTO(House house);
         void addTo(House house);
-
     }
 
     static class CardHouseHolder extends RecyclerView.ViewHolder {
@@ -142,5 +137,4 @@ public class HouseCard extends RecyclerView.Adapter<HouseCard.CardHouseHolder> i
             });
         }
     }
-
 }

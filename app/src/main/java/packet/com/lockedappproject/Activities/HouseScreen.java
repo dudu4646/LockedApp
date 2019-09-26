@@ -1,34 +1,26 @@
 package packet.com.lockedappproject.Activities;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.snackbar.Snackbar;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import packet.com.lockedappproject.Adapters.HouseScreenAdapt;
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.House;
 import packet.com.lockedappproject.models.Lock;
 
-public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.Interface, FireBase.UpdateUi{
+public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.Interface, FireBase.UpdateUi {
 
     private TextView h1, h2, checkNum;
     private RecyclerView lockList;
@@ -127,9 +119,7 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), AddLock.class);
                 intent.putExtra("houseName", house.name);
-
-                startActivityForResult(intent,1);
-
+                startActivityForResult(intent, 1);
             }
         });
         dltImg = findViewById(R.id.dltImg);
@@ -140,16 +130,14 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
                     Snackbar.make(view, ((arr.size() == 0) ? R.string.nothingToDelete : R.string.manyToDelete), Snackbar.LENGTH_LONG).show();
                 else {
                     Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
-                    intent.putExtra("houseId",house.id);
+                    intent.putExtra("houseId", house.id);
                     intent.putExtra("lockName", arr.get(0).name);
                     intent.putExtra("status", 4);
-                    startActivityForResult(intent,1);
+                    startActivityForResult(intent, 1);
                 }
-
             }
         });
     }
-
 
     @Override
     protected void onStart() {
@@ -197,9 +185,9 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         house = FireBase.getOneHouse(house.id);
-        if (house != null){
-            Intent intent = new Intent(getApplicationContext(),HouseScreen.class);
-            intent.putExtra("houseId",house.id);
+        if (house != null) {
+            Intent intent = new Intent(getApplicationContext(), HouseScreen.class);
+            intent.putExtra("houseId", house.id);
             overridePendingTransition(0, 0);
             startActivity(intent);
             overridePendingTransition(0, 0);

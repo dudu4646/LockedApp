@@ -5,17 +5,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.snackbar.Snackbar;
-
 import java.util.List;
-
 import packet.com.lockedappproject.Adapters.HouseCard;
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;

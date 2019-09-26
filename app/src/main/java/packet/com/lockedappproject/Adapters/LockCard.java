@@ -6,14 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.snackbar.Snackbar;
-
 import java.util.List;
-
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.House;

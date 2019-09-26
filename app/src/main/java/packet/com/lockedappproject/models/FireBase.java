@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-
 public class FireBase {
 
     private static FirebaseDatabase db = FirebaseDatabase.getInstance();
@@ -309,7 +308,6 @@ public class FireBase {
                             userRef.addValueEventListener(userListener);
                             download();
                             u.Success();
-
                         } else {
                             // If sign in fails, display a message to the user.
                             u.Failed(task.getException());
@@ -419,7 +417,6 @@ public class FireBase {
 
     //remove listener for Requests updates
     public static void removeFromRequestsUpdates(UpdateRequests u) {
-//        if (updateRequests.contains(u))
         updateRequests.remove(u);
     }
 
@@ -627,7 +624,7 @@ public class FireBase {
             }
         });
     }
-
+/*
     //remove uId from string
     private static String deleteUid(String str) {
         ArrayList<String> arr = new ArrayList<>(Arrays.asList(str.split(",")));
@@ -652,36 +649,16 @@ public class FireBase {
     private static Lock makeAdmin(Lock lock, String uId) {
         return null;
     }
+*/
 
     //delete request
     private static void dltReq(String reqId) {
         reqRef.child(reqId).removeValue();
     }
 
-    //remove house from all other users
-    private static void remove_H_from_other_users(final House house) {
-        String users[] = (remove_id_from_string(house.admin, getUid())).split(",");
-        for (String user : users) {
-            db.getReference("users").child(user).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    User u = dataSnapshot.getValue(User.class);
-                    u.houseList = remove_id_from_string(u.houseList, house.id);
-                    db.getReference("users").child(dataSnapshot.getKey()).setValue(u);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        }
-    }
-
     //INTERFACES:
     public interface UpdateUi {
         void Success();
-
         void Failed(Exception e);
     }
 
@@ -695,7 +672,6 @@ public class FireBase {
 
     public interface FindLock {
         void found(House house, Lock lock);
-
         void notFound(String lId);
     }
 

@@ -7,21 +7,15 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.snackbar.Snackbar;
-
 import java.util.List;
-
-import packet.com.lockedappproject.Activities.DialogActivity;
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.Lock;
 
-
-public class HouseScreenAdapt extends RecyclerView.Adapter<HouseScreenAdapt.LockHolder> implements FireBase.UpdateLockData{
+public class HouseScreenAdapt extends RecyclerView.Adapter<HouseScreenAdapt.LockHolder> implements FireBase.UpdateLockData {
 
     private Context context;
     private List<Lock> locks;
@@ -32,7 +26,7 @@ public class HouseScreenAdapt extends RecyclerView.Adapter<HouseScreenAdapt.Lock
         this.context = context;
         this.lockStr = lockStr;
         this.locks = FireBase.getLockFromList(lockStr);
-        this.cb=cb;
+        this.cb = cb;
     }
 
     @NonNull
@@ -61,7 +55,7 @@ public class HouseScreenAdapt extends RecyclerView.Adapter<HouseScreenAdapt.Lock
         holder.tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                cb.handleLock(view,locks.size());
+                cb.handleLock(view, locks.size());
             }
         });
 
@@ -87,7 +81,6 @@ public class HouseScreenAdapt extends RecyclerView.Adapter<HouseScreenAdapt.Lock
         this.locks = FireBase.getLockFromList(lockStr);
         notifyDataSetChanged();
     }
-
 
     public interface Interface {
         void handleLock(View view, int size);

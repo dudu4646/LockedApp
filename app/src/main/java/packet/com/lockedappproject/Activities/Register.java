@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -19,7 +18,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.User;
@@ -28,7 +26,6 @@ import packet.com.lockedappproject.models.userNick;
 public class Register extends AppCompatActivity {
 
     private static final String TAG = "Register";
-
 
     private EditText nick, email, pass, repass;
     private Button signUp;
@@ -45,18 +42,14 @@ public class Register extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
         auth = FirebaseAuth.getInstance();
-
         //set elements
         nick = findViewById(R.id.nick);
         email = findViewById(R.id.email);
         pass = findViewById(R.id.pass);
         repass = findViewById(R.id.repass);
         signUp = findViewById(R.id.signUp);
-
         nickF = emailF = passF = reF = true;
-
         nick.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -128,8 +121,6 @@ public class Register extends AppCompatActivity {
                 if (nickF || emailF || passF || reF) {
                     Toast.makeText(Register.this, "Check the data", Toast.LENGTH_SHORT).show();
                 } else {
-//                    if (checkNick())
-//                        Toast.makeText(Register.this, "User name already taken", Toast.LENGTH_SHORT).show();
                     if (FireBase.checkNick(nick.getText().toString()))
                         Toast.makeText(Register.this, "User name already taken", Toast.LENGTH_SHORT).show();
                     else {
@@ -166,7 +157,6 @@ public class Register extends AppCompatActivity {
                 close();
             }
         });
-
     }
 
     private void close(){

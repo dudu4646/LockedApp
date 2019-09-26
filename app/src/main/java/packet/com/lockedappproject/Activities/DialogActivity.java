@@ -38,7 +38,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
     private EditText addHouseName, addHouseCity, addHouseAddress, newLockName;
     private ImageView img;
     private Spinner spinner;
-    private CheckBox checkBox;
+//    private CheckBox checkBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +68,8 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
         //Spinner
         spinner = findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(this);
-        //CheckBox
-        checkBox = findViewById(R.id.checkBox);
+//        //CheckBox
+//        checkBox = findViewById(R.id.checkBox);
         //EditText
         addHouseName = findViewById(R.id.addHouseName);
         addHouseName.addTextChangedListener(new TextWatcher() {
