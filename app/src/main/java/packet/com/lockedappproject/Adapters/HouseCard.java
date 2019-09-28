@@ -18,7 +18,7 @@ import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.House;
 import packet.com.lockedappproject.models.Lock;
 
-public class HouseCard extends RecyclerView.Adapter<HouseCard.CardHouseHolder> implements FireBase.UpdateHouseData {
+public class HouseCard extends RecyclerView.Adapter<HouseCard.CardHouseHolder> implements FireBase.UpdateHouseData{
 
     private List<House> houses;
     private Context context;
@@ -42,11 +42,12 @@ public class HouseCard extends RecyclerView.Adapter<HouseCard.CardHouseHolder> i
         final House house = houses.get(position);
         holder.cbHouse = house;
         holder.locks = FireBase.getLockFromList(house.locks);
-        holder.adapt = new LockCard(holder.locks, context, house);
+        holder.adapt = new LockCard(holder.locks, context, house,holder);
         FireBase.addToUpdateLocks(holder.adapt);
         holder.lockList.setLayoutManager(new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false));
         holder.lockList.setAdapter(holder.adapt);
         holder.name.setText(house.name);
+        holder.locksNum.setText("("+holder.locks.size()+" locks)");
         holder.cardLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,12 +55,14 @@ public class HouseCard extends RecyclerView.Adapter<HouseCard.CardHouseHolder> i
                     holder.exLayout.animate().alpha(0f).setDuration(300).setListener(new Animator.AnimatorListener() {
                         @Override
                         public void onAnimationStart(Animator animator) {
-
+                            holder.enterImg.animate().alpha((0f)).setDuration(300).start();
                         }
 
                         @Override
                         public void onAnimationEnd(Animator animator) {
                             holder.exLayout.setVisibility(holder.exLayout.getAlpha() == 1f ? View.VISIBLE : View.GONE);
+                            holder.locksNum.setVisibility(View.VISIBLE);
+                            holder.enterImg.setVisibility(View.INVISIBLE);
                         }
 
                         @Override
@@ -75,7 +78,29 @@ public class HouseCard extends RecyclerView.Adapter<HouseCard.CardHouseHolder> i
                     holder.isOpen = false;
                 } else {
                     holder.exLayout.setAlpha(0f);
-                    holder.exLayout.animate().alpha(1f).setDuration(500).start();
+                    holder.exLayout.animate().alpha(1f).setDuration(500).setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            holder.enterImg.setVisibility(View.VISIBLE);
+                            holder.enterImg.setAlpha(0f);
+                            holder.enterImg.animate().alpha((1f)).setDuration(300).start();
+                            holder.locksNum.setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    }).start();
                     holder.exLayout.setVisibility(View.VISIBLE);
                     holder.isOpen = true;
                 }
@@ -96,45 +121,52 @@ public class HouseCard extends RecyclerView.Adapter<HouseCard.CardHouseHolder> i
         notifyDataSetChanged();
     }
 
+
+
     public interface Go_Add_To {
         void goTO(House house);
         void addTo(House house);
     }
 
-    static class CardHouseHolder extends RecyclerView.ViewHolder {
-        private TextView name, address;
+    static class CardHouseHolder extends RecyclerView.ViewHolder implements LockCard.UpdateLockNum {
+        private TextView name, address,locksNum,addTxt;
         private RecyclerView lockList;
         private boolean isOpen;
         private List<Lock> locks;
         private LockCard adapt;
         private ConstraintLayout cardLayout, exLayout;
-        private ImageView goImg, addImg;
+        private ImageView enterImg;
         private House cbHouse;
 
         private CardHouseHolder(@NonNull final View itemView,final Go_Add_To cb) {
             super(itemView);
             name = itemView.findViewById(R.id.cardName);
             address = itemView.findViewById(R.id.cardAddress);
+            locksNum = itemView.findViewById(R.id.locksNum);
             lockList = itemView.findViewById(R.id.lockCardList);
             cardLayout = itemView.findViewById(R.id.cardLayout);
             exLayout = itemView.findViewById(R.id.exLayout);
             isOpen = false;
-            goImg = itemView.findViewById(R.id.getImg);
-            goImg.setImageResource(R.drawable.h);
-            goImg.setOnClickListener(new View.OnClickListener() {
+            enterImg = itemView.findViewById(R.id.enterImg);
+            enterImg.setImageResource(R.drawable.enter);
+            enterImg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     cb.goTO(cbHouse);
                 }
             });
-            addImg = itemView.findViewById(R.id.addImg);
-            addImg.setImageResource(R.drawable.add);
-            addImg.setOnClickListener(new View.OnClickListener() {
+            addTxt=itemView.findViewById(R.id.addTxt);
+            addTxt.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     cb.addTo(cbHouse);
                 }
             });
+        }
+
+        @Override
+        public void updateLocksNum(int size) {
+            locksNum.setText("("+size+" locks");
         }
     }
 }

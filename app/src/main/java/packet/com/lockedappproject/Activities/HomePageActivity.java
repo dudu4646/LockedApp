@@ -64,6 +64,7 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
                     startActivity(new Intent(getApplicationContext(), RequestsActivity.class));
             }
         });
+
     }
 
     @Override
@@ -71,7 +72,8 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
         FireBase.addToRequestsUpdates(this);
         FireBase.addToUpdateHouse(adapt);
         adapt.Notify();
-        reqNum.setText(FireBase.getReqNum());
+
+        Notify(FireBase.getReqNum());
         super.onResume();
     }
 
@@ -100,6 +102,11 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
 
     @Override
     public void Notify(int size) {
-        reqNum.setText((size > 0) ? size + "" : "");
+        if (size==0)
+            reqNum.setVisibility(View.INVISIBLE);
+        else{
+            reqNum.setVisibility(View.VISIBLE);
+            reqNum.setText((size > 0) ? size + "" : "");
+        }
     }
 }

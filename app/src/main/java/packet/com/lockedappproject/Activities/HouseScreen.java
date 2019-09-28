@@ -12,6 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
+
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 import packet.com.lockedappproject.Adapters.HouseScreenAdapt;
@@ -159,11 +162,9 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
         for (i = 0; i < arr.size() && !arr.get(i).name.equalsIgnoreCase(tv.getText().toString()); i++)
             ;
         if (i < arr.size()) {
-            tv.setBackgroundColor(Color.TRANSPARENT);
             tv.setTypeface(Typeface.DEFAULT);
             arr.remove(i);
         } else {
-            tv.setBackgroundColor(Color.LTGRAY);
             tv.setTypeface(Typeface.DEFAULT_BOLD);
             arr.add(FireBase.getLockByStr(tv.getText().toString()));
         }

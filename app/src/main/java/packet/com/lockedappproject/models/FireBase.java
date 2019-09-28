@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class FireBase {
 
@@ -370,7 +372,15 @@ public class FireBase {
 
     //checking if nick is taken
     public static boolean checkNick(String s) {
-        return users.containsKey(s);
+        Iterator it = users.entrySet().iterator();
+        while(it.hasNext()){
+            Map.Entry data = (Map.Entry) it.next();
+            User user = (User) data.getValue();
+            System.out.println("testing ---> checkNick: "+user.nick);
+            if(user.nick.equalsIgnoreCase(s))
+                return true;
+        }
+        return false;
     }
 
     //add listener for houses updates
@@ -495,8 +505,10 @@ public class FireBase {
         }
 
         //עדכון או מחיקת המנעול
-        if (dltLock)
+        if (dltLock) {
+            chkReq(lock);
             db.getReference("locks").child(lock.id).removeValue();
+        }
         else
             db.getReference("locks").child(lock.id).setValue(lock);
 
@@ -510,6 +522,7 @@ public class FireBase {
         //עדכון המשתמש
         userRef.setValue(user);
     }
+
 
     //adding new lock to House
     public static void addNewLock(Lock lock, House house) {
@@ -530,13 +543,32 @@ public class FireBase {
     }
 
     //adding req to DB
-    public static void AddReq(House house, Lock lock) {
+    public static void AddReq(House house, final Lock lock) {
+        boolean flg=false;
+        reqRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int i;
+                Iterator it = dataSnapshot.getChildren().iterator();
+                while (it.hasNext()){
+                    DataSnapshot ds = (DataSnapshot) it.next();
+                    Req req = ds.getValue(Req.class);
+                    if (req.getLockId().equalsIgnoreCase(lock.id) && req.getFromUser().equalsIgnoreCase(getUid()))
+                        reqRef.child(ds.getKey()).removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         reqRef.push().setValue(new Req(lock.id, house.id, getUid(), lock.admin));
     }
 
     //updating ReqNum text
-    public static String getReqNum() {
-        return (requests != null && requests.size() > 0) ? requests.size() + "" : "";
+    public static int getReqNum() {
+        return (requests != null && requests.size() > 0) ? requests.size() : 0;
     }
 
     //approve request
@@ -577,6 +609,8 @@ public class FireBase {
         else
             reqRef.child(reqId).setValue(req);
     }
+
+
 
     //PRIVATE METHODS:
     //add id to string
@@ -624,36 +658,20 @@ public class FireBase {
             }
         });
     }
-/*
-    //remove uId from string
-    private static String deleteUid(String str) {
-        ArrayList<String> arr = new ArrayList<>(Arrays.asList(str.split(",")));
-        arr.remove(getUid());
-        // list.remove(getUid());
-        if (arr.size() == 0)
-            return "";
-        return buildStringFromList(arr);
-    }
-
-    //make first not-admin --> admin
-    private static Lock makeAdmin(Lock lock) {
-        ArrayList<String> not = new ArrayList<>(Arrays.asList(lock.notAdmin.split(",")));
-        String id = not.get(0);
-        not.remove(0);
-        lock.notAdmin = (not.size() > 0) ? buildStringFromList(not) : "";
-        lock.admin = (lock.admin.length() > 0) ? add_id_to_string(lock.admin, id) : id;
-        return lock;
-    }
-
-    //make specific user admin
-    private static Lock makeAdmin(Lock lock, String uId) {
-        return null;
-    }
-*/
 
     //delete request
     private static void dltReq(String reqId) {
         reqRef.child(reqId).removeValue();
+    }
+    //using to delete relevant requests when deleting lock
+    private static void chkReq(Lock lock) {
+        Iterator it =  requests.entrySet().iterator();
+        while (it.hasNext()){
+            Map.Entry data = (Map.Entry) it.next();
+            Req req = (Req) data.getValue();
+            if (req.getLockId().equalsIgnoreCase(lock.id))
+                rjctReq(data.getKey().toString());
+        }
     }
 
     //INTERFACES:

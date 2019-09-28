@@ -99,10 +99,14 @@ public class MainActivity extends AppCompatActivity implements FireBase.UpdateUi
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pb_layout.setVisibility(View.VISIBLE);
-                String user = FireBase.getEmailFromNick(userInput.getText().toString().toLowerCase().trim());
-                user = (user == null) ? userInput.getText().toString().toLowerCase().trim() : user;
-                FireBase.signUp(user, passInput.getText().toString(), MainActivity.this);
+                if (userInput.getText().toString().length() > 0 && passInput.getText().toString().length() > 0) {
+                    pb_layout.setVisibility(View.VISIBLE);
+                    String user = FireBase.getEmailFromNick(userInput.getText().toString().toLowerCase().trim());
+                    user = (user == null) ? userInput.getText().toString().toLowerCase().trim() : user;
+                    FireBase.signUp(user, passInput.getText().toString(), MainActivity.this);
+                }
+                else
+                    Toast.makeText(getApplicationContext(), "Some Data is Missing", Toast.LENGTH_SHORT).show();
             }
         });
     }

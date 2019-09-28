@@ -20,11 +20,13 @@ public class LockCard extends RecyclerView.Adapter<LockCard.CardLockHolder> impl
     private List<Lock> locks;
     private Context context;
     private House house;
+    private UpdateLockNum cb;
 
-    public LockCard(List<Lock> locks, Context context, House house) {
+    public LockCard(List<Lock> locks, Context context, House house,UpdateLockNum cb) {
         this.locks = locks;
         this.context = context;
         this.house=house;
+        this.cb=cb;
     }
 
     @NonNull
@@ -75,7 +77,12 @@ public class LockCard extends RecyclerView.Adapter<LockCard.CardLockHolder> impl
     @Override
     public void Notify() {
         locks = FireBase.getLockFromList(house.locks);
+        cb.updateLocksNum(getItemCount());
         notifyDataSetChanged();
+    }
+
+    public interface UpdateLockNum{
+        void updateLocksNum(int size);
     }
 
     static class CardLockHolder extends RecyclerView.ViewHolder {

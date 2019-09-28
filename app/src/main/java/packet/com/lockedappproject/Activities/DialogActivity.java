@@ -10,7 +10,6 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -30,7 +29,7 @@ import packet.com.lockedappproject.models.House;
 import packet.com.lockedappproject.models.Lock;
 import packet.com.lockedappproject.models.User;
 
-public class DialogActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener ,FireBase.FindLock {
+public class DialogActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, FireBase.FindLock {
 
     private Button ok, cancel;
     private ConstraintLayout takenLayout, foundLayout, newLockLayout, dltLockLayout, newHouseLayout;
@@ -218,7 +217,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
                     @Override
                     public void onClick(View view) {
                         Toast.makeText(DialogActivity.this, "Request was sent to the lock Admins", Toast.LENGTH_SHORT).show();
-                        FireBase.searchGeneralLock(getIntent().getStringExtra("lockId"),DialogActivity.this);
+                        FireBase.searchGeneralLock(getIntent().getStringExtra("lockId"), DialogActivity.this);
                         finish();
                     }
                 });
@@ -325,7 +324,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
 
     @Override
     public void found(House house, Lock lock) {
-        FireBase.AddReq(house,lock);
+        FireBase.AddReq(house, lock);
     }
 
     @Override

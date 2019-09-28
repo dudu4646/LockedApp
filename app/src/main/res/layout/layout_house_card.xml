@@ -16,8 +16,12 @@
         android:layout_marginStart="2dp"
         android:layout_marginTop="2dp"
         android:layout_marginEnd="2dp"
+        android:layout_marginBottom="2dp"
         android:animateLayoutChanges="true"
         android:elevation="4dp"
+        app:cardBackgroundColor="#D4D5D5"
+        app:cardCornerRadius="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -27,23 +31,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:padding="8dp"
-            android:paddingStart="8dp">
+            android:background="#D4D5D5"
+            android:padding="8dp">
 
-            <TextView
-                android:id="@+id/cardName"
+            <ImageView
+                android:id="@+id/enterImg"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-black"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="TextView"
-                android:textAlignment="center"
-                android:textSize="18sp"
-                android:textStyle="bold"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/cardAddress"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="@+id/guideline18"
+                app:layout_constraintTop_toTopOf="@+id/cardName"
+                app:srcCompat="@drawable/enter" />
 
             <TextView
                 android:id="@+id/cardAddress"
@@ -53,73 +54,84 @@
                 android:gravity="center"
                 android:padding="4dp"
                 android:text="TextView"
-                android:textAlignment="center"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:textAlignment="viewStart"
+                app:layout_constraintEnd_toStartOf="@+id/guideline18"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardName" />
+
+            <TextView
+                android:id="@+id/locksNum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/cardAddress"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/guideline18"
+                app:layout_constraintTop_toTopOf="@+id/cardName" />
+
+            <TextView
+                android:id="@+id/cardName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:padding="4dp"
+                android:text="TextView"
+                android:textAlignment="viewStart"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/guideline18"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/exLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:background="#D4D5D5"
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardAddress">
 
-                <ImageView
-                    android:id="@+id/getImg"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/h" />
-
                 <TextView
-                    android:id="@+id/textView12"
+                    android:id="@+id/addTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Get\nIn"
-                    app:layout_constraintEnd_toEndOf="@+id/getImg"
-                    app:layout_constraintStart_toStartOf="@+id/getImg"
-                    app:layout_constraintTop_toBottomOf="@+id/getImg" />
+                    android:layout_marginTop="16dp"
+                    android:text="+ Add Lock"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline19"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline19"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.8" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/lockCardList"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     app:layout_constraintEnd_toStartOf="@+id/addImg"
-                    app:layout_constraintStart_toEndOf="@+id/getImg"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                 </androidx.recyclerview.widget.RecyclerView>
-
-                <ImageView
-                    android:id="@+id/addImg"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/add" />
-
-                <TextView
-                    android:id="@+id/textView13"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Add\nLock"
-                    app:layout_constraintEnd_toEndOf="@+id/addImg"
-                    app:layout_constraintStart_toStartOf="@+id/addImg"
-                    app:layout_constraintTop_toBottomOf="@+id/addImg" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.8" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
