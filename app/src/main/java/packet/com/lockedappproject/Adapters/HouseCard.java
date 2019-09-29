@@ -166,7 +166,7 @@ public class HouseCard extends RecyclerView.Adapter<HouseCard.CardHouseHolder> i
 
         @Override
         public void updateLocksNum(int size) {
-            locksNum.setText("("+size+" locks");
+            locksNum.setText("("+size+" locks)");
         }
     }
 }
