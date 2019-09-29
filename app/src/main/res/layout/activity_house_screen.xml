@@ -18,7 +18,7 @@
         app:layout_constraintStart_toStartOf="@+id/guideline21"
         app:layout_constraintTop_toTopOf="@+id/guideline9"
         app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/open" />
+        app:srcCompat="@drawable/open_2" />
 
     <ImageView
         android:id="@+id/closeImg"
@@ -30,7 +30,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline15"
         app:layout_constraintStart_toStartOf="@+id/guideline15"
         app:layout_constraintTop_toTopOf="@+id/opemImg"
-        app:srcCompat="@drawable/close" />
+        app:srcCompat="@drawable/close_2" />
 
     <ImageView
         android:id="@+id/adminImg"
@@ -42,7 +42,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline22"
         app:layout_constraintStart_toStartOf="@+id/guideline22"
         app:layout_constraintTop_toTopOf="@+id/opemImg"
-        app:srcCompat="@drawable/alock" />
+        app:srcCompat="@drawable/admin_2" />
 
     <ImageView
         android:id="@+id/addImg"
@@ -81,6 +81,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="h2"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/h1" />

@@ -42,13 +42,13 @@ public class LockCard extends RecyclerView.Adapter<LockCard.CardLockHolder> impl
         holder.name.setText(lock.name.replace(' ','\n'));
         switch (lock.status) {
             case "open":
-                holder.img.setImageResource(R.drawable.open);
+                holder.img.setImageResource(R.drawable.open_2);
                 break;
             case "close":
-                holder.img.setImageResource(R.drawable.close);
+                holder.img.setImageResource(R.drawable.close_2);
                 break;
             case"lock":
-                holder.img.setImageResource(R.drawable.alock);
+                holder.img.setImageResource(R.drawable.admin_2);
                 break;
         }
         holder.img.setOnClickListener(new View.OnClickListener() {

@@ -43,13 +43,13 @@ public class HouseScreenAdapt extends RecyclerView.Adapter<HouseScreenAdapt.Lock
         holder.tv.setText(lock.name);
         switch (lock.status) {
             case "open":
-                holder.iv.setImageResource(R.drawable.open);
+                holder.iv.setImageResource(R.drawable.open_2);
                 break;
             case "close":
-                holder.iv.setImageResource(R.drawable.close);
+                holder.iv.setImageResource(R.drawable.close_2);
                 break;
             case "lock":
-                holder.iv.setImageResource(R.drawable.alock);
+                holder.iv.setImageResource(R.drawable.admin_2);
                 break;
         }
         holder.tv.setOnClickListener(new View.OnClickListener() {
