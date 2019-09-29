@@ -101,7 +101,10 @@ public class FireBase {
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
             House house = dataSnapshot.getValue(House.class);
-            if (user.houseList.contains(house.id)) {
+            System.out.println("testing ---> new house added: " + house.name + ", " + house.id);
+            System.out.println("testing ---> user house list: " + user.nick + ", " + user.houseList);
+            if (user.houseList.contains(house.id) && !house.id.equalsIgnoreCase("")) {
+                System.out.println("testing ---> in!!!");
                 userHouses.add(house);
                 Collections.sort(userHouses);
                 for (UpdateHouseData u : updateHouse) {
@@ -373,11 +376,10 @@ public class FireBase {
     //checking if nick is taken
     public static boolean checkNick(String s) {
         Iterator it = users.entrySet().iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             Map.Entry data = (Map.Entry) it.next();
             User user = (User) data.getValue();
-            System.out.println("testing ---> checkNick: "+user.nick);
-            if(user.nick.equalsIgnoreCase(s))
+            if (user.nick.equalsIgnoreCase(s))
                 return true;
         }
         return false;
@@ -495,7 +497,7 @@ public class FireBase {
         //בדיקה אם יש עוד מנעולים לאותו משתמש בבית
         String locks[] = house.locks.split(",");
         for (String l : locks)
-            if (l.length()>0 && user.lockList.contains(l))
+            if (l.length() > 0 && user.lockList.contains(l))
                 dltHfromU = false;
 
         //אם אין למשתמש עוד מנעולים באותו בית - צריך למחוק את הבית
@@ -508,8 +510,7 @@ public class FireBase {
         if (dltLock) {
             chkReq(lock);
             db.getReference("locks").child(lock.id).removeValue();
-        }
-        else
+        } else
             db.getReference("locks").child(lock.id).setValue(lock);
 
         //עדכון או מחיקת הבית
@@ -544,13 +545,13 @@ public class FireBase {
 
     //adding req to DB
     public static void AddReq(House house, final Lock lock) {
-        boolean flg=false;
+        boolean flg = false;
         reqRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int i;
                 Iterator it = dataSnapshot.getChildren().iterator();
-                while (it.hasNext()){
+                while (it.hasNext()) {
                     DataSnapshot ds = (DataSnapshot) it.next();
                     Req req = ds.getValue(Req.class);
                     if (req.getLockId().equalsIgnoreCase(lock.id) && req.getFromUser().equalsIgnoreCase(getUid()))
@@ -610,8 +611,6 @@ public class FireBase {
             reqRef.child(reqId).setValue(req);
     }
 
-
-
     //PRIVATE METHODS:
     //add id to string
     private static String add_id_to_string(String src, String id) {
@@ -663,10 +662,11 @@ public class FireBase {
     private static void dltReq(String reqId) {
         reqRef.child(reqId).removeValue();
     }
+
     //using to delete relevant requests when deleting lock
     private static void chkReq(Lock lock) {
-        Iterator it =  requests.entrySet().iterator();
-        while (it.hasNext()){
+        Iterator it = requests.entrySet().iterator();
+        while (it.hasNext()) {
             Map.Entry data = (Map.Entry) it.next();
             Req req = (Req) data.getValue();
             if (req.getLockId().equalsIgnoreCase(lock.id))
@@ -677,6 +677,7 @@ public class FireBase {
     //INTERFACES:
     public interface UpdateUi {
         void Success();
+
         void Failed(Exception e);
     }
 
@@ -690,6 +691,7 @@ public class FireBase {
 
     public interface FindLock {
         void found(House house, Lock lock);
+
         void notFound(String lId);
     }
 
