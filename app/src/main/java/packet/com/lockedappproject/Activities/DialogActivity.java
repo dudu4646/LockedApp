@@ -203,7 +203,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
             //found lock in another house:
             case 2:
                 header.setText("Add lock");
-                img.setImageResource(R.drawable.add);
+                img.setImageResource(R.drawable.icons8_add_60);
                 foundLayout.setVisibility(View.VISIBLE);
                 TextView found2 = findViewById(R.id.found2);
                 found2.setText(getIntent().getStringExtra("houseName"));
@@ -235,7 +235,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
                 String toHouse = getIntent().getStringExtra("houseName");
                 spinner.setSelection(arr.indexOf(toHouse));
                 header.setText("Add lock");
-                img.setImageResource(R.drawable.add);
+                img.setImageResource(R.drawable.icons8_add_60);
                 newLockLayout.setVisibility(View.VISIBLE);
                 ok.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -253,7 +253,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
             //delete house
             case 4:
                 header.setText("Delete lock");
-                img.setImageResource(R.drawable.dlt);
+                img.setImageResource(R.drawable.icons8_delete_bin_60);
                 dltLockLayout.setVisibility(View.VISIBLE);
                 final String lName = getIntent().getStringExtra("lockName");
                 final String houseId = getIntent().getStringExtra("houseId");

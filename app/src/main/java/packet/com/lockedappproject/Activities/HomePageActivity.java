@@ -22,8 +22,8 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
     private RecyclerView cardsView;
     private List<House> houseList;
     private HouseCard adapt;
-    private ConstraintLayout newLockLayout;
-    private CardView reqCard,blueCard;
+    private ConstraintLayout newLockLayout,reqLayout,blueLayot;
+//    private CardView reqCard,blueCard;
     private TextView reqNum;
 
     @Override
@@ -37,7 +37,6 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
         cardsView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false));
         cardsView.setAdapter(adapt);
         newLockLayout = findViewById(R.id.NewLockLayout);
-
         newLockLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -46,16 +45,8 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
                 startActivity(intent);
             }
         });
-        reqNum = findViewById(R.id.reqNum);
-        blueCard = findViewById(R.id.blueCard);
-        blueCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "לבנות עמוד התחברות עם bluetooth", Toast.LENGTH_SHORT).show();
-            }
-        });
-        reqCard = findViewById(R.id.reqCard);
-        reqCard.setOnClickListener(new View.OnClickListener() {
+        reqLayout = findViewById(R.id.reqLayout);
+        reqLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (reqNum.getText().toString().equalsIgnoreCase(""))
@@ -64,6 +55,31 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
                     startActivity(new Intent(getApplicationContext(), RequestsActivity.class));
             }
         });
+        reqNum = findViewById(R.id.reqNum);
+        blueLayot=findViewById(R.id.blueLayout);
+        blueLayot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "לבנות עמוד התחברות עם bluetooth", Toast.LENGTH_SHORT).show();
+            }
+        });
+//        blueCard = findViewById(R.id.blueCard);
+//        blueCard.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Toast.makeText(getApplicationContext(), "לבנות עמוד התחברות עם bluetooth", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//        reqCard = findViewById(R.id.reqCard);
+//        reqCard.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (reqNum.getText().toString().equalsIgnoreCase(""))
+//                    Snackbar.make(view, "You don't have any Requests waiting", Snackbar.LENGTH_SHORT).show();
+//                else
+//                    startActivity(new Intent(getApplicationContext(), RequestsActivity.class));
+//            }
+//        });
 
     }
 

@@ -51,7 +51,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toEndOf="@+id/opemImg"
         app:layout_constraintStart_toStartOf="@+id/opemImg"
-        app:srcCompat="@drawable/add" />
+        app:srcCompat="@drawable/icons8_add_60" />
 
     <ImageView
         android:id="@+id/dltImg"
@@ -61,7 +61,7 @@
         app:layout_constraintEnd_toEndOf="@+id/adminImg"
         app:layout_constraintStart_toStartOf="@+id/adminImg"
         app:layout_constraintTop_toTopOf="@+id/addImg"
-        app:srcCompat="@drawable/dlt" />
+        app:srcCompat="@drawable/icons8_delete_bin_60" />
 
     <TextView
         android:id="@+id/h1"
