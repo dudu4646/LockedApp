@@ -524,7 +524,6 @@ public class FireBase {
         userRef.setValue(user);
     }
 
-
     //adding new lock to House
     public static void addNewLock(Lock lock, House house) {
         User user = getUser();

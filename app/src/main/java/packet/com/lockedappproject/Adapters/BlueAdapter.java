@@ -45,7 +45,7 @@ public class BlueAdapter extends RecyclerView.Adapter<BlueAdapter.DeviceHolder> 
         holder.holderLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                cb.connect(device.getAddress());
+                cb.connect(device);
             }
         });
     }
@@ -73,7 +73,7 @@ public class BlueAdapter extends RecyclerView.Adapter<BlueAdapter.DeviceHolder> 
     }
 
     public interface BlueCB {
-        void connect(String mac);
+        void connect(BluetoothDevice device);
     }
 
     static class DeviceHolder extends RecyclerView.ViewHolder {

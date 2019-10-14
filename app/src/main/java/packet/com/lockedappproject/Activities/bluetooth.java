@@ -3,7 +3,6 @@ package packet.com.lockedappproject.Activities;
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -23,19 +22,20 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.UUID;
-
 import packet.com.lockedappproject.Adapters.BlueAdapter;
 import packet.com.lockedappproject.R;
+import packet.com.lockedappproject.models.BlueThread;
+import packet.com.lockedappproject.models.FireBase;
+import packet.com.lockedappproject.models.House;
+import packet.com.lockedappproject.models.Lock;
 
-public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB {
+public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, BlueThread.ThreadCB, FireBase.FindLock {
 
-    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
-    private BluetoothAdapter bta;                 //bluetooth stuff
-    private BluetoothSocket socket;             //bluetooth stuff
-    private BluetoothDevice device;
+    //    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+    private BluetoothAdapter bta;
+    private BlueThread bThread;
     private BroadcastReceiver receiver;
-    private TextView scan;
+    private TextView scan, sts;
     private BlueAdapter dAdapter;
     private RecyclerView dList;
 
@@ -85,9 +85,12 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB {
             public void onClick(View view) {
                 System.out.println("testing ---> start scanning");
                 dAdapter.reset();
+                sts.setText("");
                 bta.startDiscovery();
             }
         });
+
+        sts = findViewById(R.id.sts);
     }
 
     @Override
@@ -112,10 +115,45 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(receiver);
+        bThread.cancel();
     }
 
     @Override
-    public void connect(String mac) {
-        System.out.println("testing --> connect with: " + mac);
+    public void connect(BluetoothDevice device) {
+        System.out.println("testing --> connecting to: " + device.getAddress());
+        bThread = new BlueThread(device, this);
+        System.out.println("testing ---? flg");
+        bThread.start();
+    }
+
+
+    @Override
+    public void updateUi(int status, int part, int total, String msg) {
+        switch (status) {
+            case DISCONNECT:
+                sts.setText("Disconnect");
+                break;
+            case CONNECTING:
+                sts.setText("Connecting...");
+                break;
+            case CONNECTED:
+                sts.setText("Connected");
+                bThread.write((GET_LID + "").getBytes(), 2);
+                sts.setText("Getting Lock details...");
+                break;
+            case GET_LID:
+
+                break;
+        }
+    }
+
+    @Override
+    public void found(House house, Lock lock) {
+
+    }
+
+    @Override
+    public void notFound(String lId) {
+
     }
 }
