@@ -8,11 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
+
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.House;
@@ -148,7 +151,7 @@ public class HouseCard extends RecyclerView.Adapter<HouseCard.CardHouseHolder> i
             exLayout = itemView.findViewById(R.id.exLayout);
             isOpen = false;
             enterImg = itemView.findViewById(R.id.enterImg);
-            enterImg.setImageResource(R.drawable.enter);
+            enterImg.setImageResource(R.drawable.enter_1);
             enterImg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

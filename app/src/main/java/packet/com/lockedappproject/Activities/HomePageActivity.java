@@ -4,14 +4,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.snackbar.Snackbar;
+
 import java.util.List;
+
 import packet.com.lockedappproject.Adapters.HouseCard;
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
@@ -23,7 +25,6 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
     private List<House> houseList;
     private HouseCard adapt;
     private ConstraintLayout newLockLayout,reqLayout,blueLayot;
-//    private CardView reqCard,blueCard;
     private TextView reqNum;
 
     @Override
@@ -60,26 +61,10 @@ public class HomePageActivity extends AppCompatActivity implements HouseCard.Go_
         blueLayot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "לבנות עמוד התחברות עם bluetooth", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getApplicationContext(), bluetooth.class));
             }
         });
-//        blueCard = findViewById(R.id.blueCard);
-//        blueCard.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Toast.makeText(getApplicationContext(), "לבנות עמוד התחברות עם bluetooth", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//        reqCard = findViewById(R.id.reqCard);
-//        reqCard.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (reqNum.getText().toString().equalsIgnoreCase(""))
-//                    Snackbar.make(view, "You don't have any Requests waiting", Snackbar.LENGTH_SHORT).show();
-//                else
-//                    startActivity(new Intent(getApplicationContext(), RequestsActivity.class));
-//            }
-//        });
+
 
     }
 

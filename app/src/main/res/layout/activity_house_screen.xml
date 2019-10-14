@@ -61,7 +61,7 @@
         app:layout_constraintEnd_toEndOf="@+id/adminImg"
         app:layout_constraintStart_toStartOf="@+id/adminImg"
         app:layout_constraintTop_toTopOf="@+id/addImg"
-        app:srcCompat="@drawable/icons8_delete_bin_60" />
+        app:srcCompat="@drawable/delete" />
 
     <TextView
         android:id="@+id/h1"
