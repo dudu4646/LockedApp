@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +36,8 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
     private BluetoothAdapter bta;
     private BlueThread bThread;
     private BroadcastReceiver receiver;
-    private TextView scan, sts;
+    private TextView scan, sts, id;
+    private CheckBox signed;
     private BlueAdapter dAdapter;
     private RecyclerView dList;
 
@@ -84,6 +86,8 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
             @Override
             public void onClick(View view) {
                 System.out.println("testing ---> start scanning");
+                if (bThread != null)
+                    bThread.cancel();
                 dAdapter.reset();
                 sts.setText("");
                 bta.startDiscovery();
@@ -91,6 +95,8 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
         });
 
         sts = findViewById(R.id.sts);
+        id = findViewById(R.id.id);
+        signed = findViewById(R.id.signed);
     }
 
     @Override
@@ -128,7 +134,7 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
 
 
     @Override
-    public void updateUi(int status, int part, int total, String msg) {
+    public void updateUi(int status, String msg) {
         switch (status) {
             case DISCONNECT:
                 sts.setText("Disconnect");
@@ -138,22 +144,24 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
                 break;
             case CONNECTED:
                 sts.setText("Connected");
-                bThread.write((GET_LID + "").getBytes(), 2);
+                bThread.write((GET_LID + "").getBytes(), GET_LID);
                 sts.setText("Getting Lock details...");
                 break;
             case GET_LID:
-
+                id.setText(msg);
+                FireBase.searchGeneralLock(msg, this);
+                bThread.write((GET_SSID + "").getBytes(), GET_SSID);
                 break;
         }
     }
 
     @Override
     public void found(House house, Lock lock) {
-
+        signed.setChecked(true);
     }
 
     @Override
     public void notFound(String lId) {
-
+        signed.setChecked(false);
     }
 }

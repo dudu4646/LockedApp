@@ -48,31 +48,34 @@ public class BlueThread extends Thread {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    cb.updateUi(ThreadCB.CONNECTING, 1, 1, "");
+                    cb.updateUi(ThreadCB.CONNECTING, "");
                 }
             });
             socket.connect();
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    cb.updateUi(ThreadCB.CONNECTED, 1, 1, "");
+                    cb.updateUi(ThreadCB.CONNECTED, "");
                 }
             });
 
-
             while (true) {
                 try {
-                    int numLines;
                     int numBytes;
-                    numLines = inStream.read() - 48;
-                    for (int l = 0; l < numLines; l++) {
-                        numBytes = inStream.read() - 48;
-                        buffer = new byte[numBytes];
-                        System.out.println("testing ---> total length = " + numBytes);
-                        for (int i = 0; i < numBytes; i++)
-                            buffer[i] = (byte) inStream.read();
-                    }
+                    numBytes = inStream.read();
+                    System.out.println("testing ---> total length = " + numBytes);
+                    buffer = new byte[numBytes];
+                    for (int i = 0; i < numBytes; i++)
+                        buffer[i] = (byte) inStream.read();
                     System.out.println("testing ---> msg = " + new String(buffer));
+
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            cb.updateUi(ThreadCB.GET_LID, new String(buffer));
+                        }
+                    });
+
                 } catch (IOException e) {
                     System.out.println("testing ---> read loop ended");
                     break;
@@ -92,6 +95,7 @@ public class BlueThread extends Thread {
     public void write(byte[] msg, int sts) {
         try {
             status = sts;
+            System.out.println("testing ---> status = " + sts + ", msg: " + new String(msg));
             outStream.write(msg);
         } catch (IOException e) {
             System.out.println("failed to send msg");
@@ -103,7 +107,7 @@ public class BlueThread extends Thread {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                cb.updateUi(ThreadCB.DISCONNECT, 1, 1, "");
+                cb.updateUi(ThreadCB.DISCONNECT, "");
             }
         });
         System.out.println("testing ---> cancel called");
@@ -120,13 +124,12 @@ public class BlueThread extends Thread {
         static int CONNECTING = 0;
         static int CONNECTED = 1;
         static int GET_LID = 2;
-        static int GET_WIFI = 3;
-        static int GET_SSID = 4;
-        static int GET_PASS = 5;
-        static int SET_SSID = 6;
-        static int SET_PASS = 7;
+        static int GET_SSID = 3;
+        static int GET_PASS = 4;
+        static int SET_SSID = 5;
+        static int SET_PASS = 6;
 
-        void updateUi(int status, int part, int total, String msg);
+        void updateUi(int status, String msg);
     }
 }
 
