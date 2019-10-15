@@ -36,8 +36,8 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
     private BluetoothAdapter bta;
     private BlueThread bThread;
     private BroadcastReceiver receiver;
-    private TextView scan, sts, id;
-    private CheckBox signed;
+    private TextView scan, sts, id, wifi;
+    private CheckBox signed, wifiCheck;
     private BlueAdapter dAdapter;
     private RecyclerView dList;
 
@@ -96,7 +96,9 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
 
         sts = findViewById(R.id.sts);
         id = findViewById(R.id.id);
+        wifi = findViewById(R.id.wifi);
         signed = findViewById(R.id.signed);
+        wifiCheck = findViewById(R.id.wifiCheck);
     }
 
     @Override
@@ -138,6 +140,7 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
         switch (status) {
             case DISCONNECT:
                 sts.setText("Disconnect");
+                bThread.cancel();
                 break;
             case CONNECTING:
                 sts.setText("Connecting...");
@@ -148,9 +151,19 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
                 sts.setText("Getting Lock details...");
                 break;
             case GET_LID:
+                System.out.println("testing ---> GET_LID reply");
                 id.setText(msg);
                 FireBase.searchGeneralLock(msg, this);
+                sts.setText("Getting WIFI status...");
                 bThread.write((GET_SSID + "").getBytes(), GET_SSID);
+                break;
+            case GET_SSID:
+                wifi.setText(msg);
+                bThread.write((GET_WIFI + "").getBytes(), GET_WIFI);
+                break;
+            case GET_WIFI:
+                System.out.println("testing ---> GET_WIFI msg: " + msg);
+                wifiCheck.setChecked(msg.equalsIgnoreCase("1"));
                 break;
         }
     }

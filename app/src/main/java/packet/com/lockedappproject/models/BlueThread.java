@@ -72,7 +72,7 @@ public class BlueThread extends Thread {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            cb.updateUi(ThreadCB.GET_LID, new String(buffer));
+                            cb.updateUi(status, new String(buffer));
                         }
                     });
 
@@ -125,7 +125,7 @@ public class BlueThread extends Thread {
         static int CONNECTED = 1;
         static int GET_LID = 2;
         static int GET_SSID = 3;
-        static int GET_PASS = 4;
+        static int GET_WIFI = 4;
         static int SET_SSID = 5;
         static int SET_PASS = 6;
 

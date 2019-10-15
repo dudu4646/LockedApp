@@ -152,24 +152,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.3" />
+            app:layout_constraintGuide_percent="0.25" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline30"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.7" />
+            app:layout_constraintGuide_percent="0.75" />
 
         <TextView
             android:id="@+id/textView22"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
             android:text="ID:"
             android:textSize="18sp"
-            app:layout_constraintEnd_toStartOf="@+id/guideline26"
+            app:layout_constraintEnd_toEndOf="@+id/textView25"
+            app:layout_constraintStart_toStartOf="@+id/textView25"
             app:layout_constraintTop_toBottomOf="@+id/textView21" />
 
         <TextView
@@ -177,7 +177,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="TextView"
             android:textSize="18sp"
             app:layout_constraintBaseline_toBaselineOf="@+id/textView22"
             app:layout_constraintStart_toStartOf="@+id/guideline26" />
@@ -186,11 +185,11 @@
             android:id="@+id/textView24"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:text="Signed:"
             android:textSize="18sp"
             app:layout_constraintBaseline_toBaselineOf="@+id/id"
-            app:layout_constraintEnd_toStartOf="@+id/guideline30" />
+            app:layout_constraintEnd_toEndOf="@+id/textView27"
+            app:layout_constraintStart_toStartOf="@+id/textView27" />
 
         <CheckBox
             android:id="@+id/signed"
@@ -201,6 +200,43 @@
             app:layout_constraintBottom_toBottomOf="@+id/textView24"
             app:layout_constraintStart_toStartOf="@+id/guideline30"
             app:layout_constraintTop_toTopOf="@+id/textView24" />
+
+        <TextView
+            android:id="@+id/textView25"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:text="WIFI:"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline26"
+            app:layout_constraintTop_toBottomOf="@+id/textView22" />
+
+        <TextView
+            android:id="@+id/wifi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/textView25"
+            app:layout_constraintStart_toStartOf="@+id/guideline26" />
+
+        <TextView
+            android:id="@+id/textView27"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Connected:"
+            android:textSize="18sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/textView25"
+            app:layout_constraintEnd_toStartOf="@+id/guideline30" />
+
+        <CheckBox
+            android:id="@+id/wifiCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            app:layout_constraintBaseline_toBaselineOf="@+id/textView27"
+            app:layout_constraintStart_toStartOf="@+id/signed" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
