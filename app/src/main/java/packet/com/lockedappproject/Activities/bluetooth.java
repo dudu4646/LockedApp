@@ -123,7 +123,10 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(receiver);
-        bThread.cancel();
+        try {
+            bThread.cancel();
+        } catch (Exception e) {
+        }
     }
 
     @Override

@@ -43,6 +43,7 @@
             android:theme="@style/DialogTheme" />
         <activity
             android:name=".Activities.Register"
+            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
@@ -53,6 +54,7 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".Activities.MainActivity"
+            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
