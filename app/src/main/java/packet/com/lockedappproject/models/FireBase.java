@@ -610,6 +610,13 @@ public class FireBase {
             reqRef.child(reqId).setValue(req);
     }
 
+    public static boolean findLockInList(String id) {
+        for (Lock l : userLocks)
+            if (l.id.equalsIgnoreCase(id))
+                return true;
+        return false;
+    }
+
     //PRIVATE METHODS:
     //add id to string
     private static String add_id_to_string(String src, String id) {

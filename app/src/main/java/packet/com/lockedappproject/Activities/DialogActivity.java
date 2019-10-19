@@ -1,7 +1,12 @@
 package packet.com.lockedappproject.Activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Typeface;
+import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -29,15 +35,17 @@ import packet.com.lockedappproject.models.House;
 import packet.com.lockedappproject.models.Lock;
 import packet.com.lockedappproject.models.User;
 
+import static android.net.wifi.WifiManager.EXTRA_RESULTS_UPDATED;
+
 public class DialogActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, FireBase.FindLock {
 
     private Button ok, cancel;
-    private ConstraintLayout takenLayout, foundLayout, newLockLayout, dltLockLayout, newHouseLayout;
+    private ConstraintLayout takenLayout, foundLayout, newLockLayout, dltLockLayout, newHouseLayout, wifiLayout;
     private TextView header;
     private EditText addHouseName, addHouseCity, addHouseAddress, newLockName;
     private ImageView img;
     private Spinner spinner;
-//    private CheckBox checkBox;
+    private WifiManager wifiManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +68,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
         newLockLayout = findViewById(R.id.newLockLayout);
         dltLockLayout = findViewById(R.id.dltLockLayout);
         newHouseLayout = findViewById(R.id.newHouseLayout);
+        wifiLayout = findViewById(R.id.wifiLayout);
         //TextView
         header = findViewById(R.id.header);
         //ImageView
@@ -67,8 +76,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
         //Spinner
         spinner = findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(this);
-//        //CheckBox
-//        checkBox = findViewById(R.id.checkBox);
+
         //EditText
         addHouseName = findViewById(R.id.addHouseName);
         addHouseName.addTextChangedListener(new TextWatcher() {
@@ -269,7 +277,43 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
                     }
                 });
                 break;
+            case 5:
+                wifiLayout.setVisibility(View.VISIBLE);
+                wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onReceive(Context c, Intent intent) {
+                        boolean success = intent.getBooleanExtra(
+                                EXTRA_RESULTS_UPDATED, false);
+                        if (success) {
+                            scanSuccess();
+                        } else {
+                            scanFailure();
+                        }
+                    }
+                };
+                IntentFilter intentFilter = new IntentFilter();
+                intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+                getApplication().registerReceiver(wifiScanReceiver, intentFilter);
+
+                boolean success = wifiManager.startScan();
+                if (!success) {
+                    scanFailure();
+                }
+
+                if (wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED)
+                    Toast.makeText(this, "turn WIFI on", Toast.LENGTH_SHORT).show();
+                break;
         }
+    }
+
+    private void scanSuccess() {
+        Toast.makeText(this, "scanSuccess()", Toast.LENGTH_SHORT).show();
+    }
+
+    private void scanFailure() {
+        Toast.makeText(this, "scanFailure", Toast.LENGTH_SHORT).show();
     }
 
     private boolean checkData() {

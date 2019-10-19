@@ -7,7 +7,10 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.House;
@@ -82,11 +85,12 @@ public class AddLock extends AppCompatActivity implements FireBase.FindLock {
 
     @Override
     public void notFound(String lId) {
-        Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
-        intent.putExtra("status", 3);
-        intent.putExtra("houseName",toHouse);
-        intent.putExtra("houseId",lockId.getText().toString().trim());
-        startActivity(intent);
-        finish();
+//        Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
+//        intent.putExtra("status", 3);
+//        intent.putExtra("houseName",toHouse);
+//        intent.putExtra("houseId",lockId.getText().toString().trim());
+//        startActivity(intent);
+//        finish();
+        Toast.makeText(this, "This Lock isn't Activated!", Toast.LENGTH_LONG).show();
     }
 }

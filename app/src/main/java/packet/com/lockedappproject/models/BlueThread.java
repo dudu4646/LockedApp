@@ -29,6 +29,7 @@ public class BlueThread extends Thread {
         BluetoothSocket tmp = null;
         InputStream inTmp = null;
         OutputStream outTmp = null;
+        status = ThreadCB.CONNECTING;
         try {
             tmp = device.createInsecureRfcommSocketToServiceRecord(MY_UUID);
             inTmp = tmp.getInputStream();
@@ -45,29 +46,25 @@ public class BlueThread extends Thread {
     public void run() {
         try {
             final Activity activity = (Activity) cb;
+
+            socket.connect();
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     cb.updateUi(ThreadCB.CONNECTING, "");
                 }
             });
-            socket.connect();
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    cb.updateUi(ThreadCB.CONNECTED, "");
-                }
-            });
-
+            System.out.println("testing ---> starting read loop");
             while (true) {
                 try {
                     int numBytes;
                     numBytes = inStream.read();
-                    System.out.println("testing ---> total length = " + numBytes);
+                    System.out.println("testing ---> incoming total length = " + numBytes);
                     buffer = new byte[numBytes];
                     for (int i = 0; i < numBytes; i++)
                         buffer[i] = (byte) inStream.read();
-                    System.out.println("testing ---> msg = " + new String(buffer));
+                    System.out.println("testing ---> incoming msg = " + new String(buffer));
+
 
                     activity.runOnUiThread(new Runnable() {
                         @Override
@@ -92,10 +89,11 @@ public class BlueThread extends Thread {
         }
     }
 
-    public void write(byte[] msg, int sts) {
+    public void write(String str, int sts) {
+        byte[] msg = str.getBytes();
         try {
             status = sts;
-            System.out.println("testing ---> status = " + sts + ", msg: " + new String(msg));
+            System.out.println("testing ---> outgoing status = " + sts + ", msg: " + new String(msg));
             outStream.write(msg);
         } catch (IOException e) {
             System.out.println("failed to send msg");
@@ -104,6 +102,7 @@ public class BlueThread extends Thread {
     }
 
     public void cancel() {
+
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -113,9 +112,10 @@ public class BlueThread extends Thread {
         System.out.println("testing ---> cancel called");
         try {
             socket.close();
-
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("testing ---> cancel() failed : " + e.getMessage());
         }
     }
 

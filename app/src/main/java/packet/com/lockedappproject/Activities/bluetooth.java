@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,14 +33,15 @@ import packet.com.lockedappproject.models.Lock;
 
 public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, BlueThread.ThreadCB, FireBase.FindLock {
 
-    //    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
     private BluetoothAdapter bta;
     private BlueThread bThread;
     private BroadcastReceiver receiver;
-    private TextView scan, sts, id, wifi;
+    private TextView scan, sts, id, wifi, info;
     private CheckBox signed, wifiCheck;
     private BlueAdapter dAdapter;
     private RecyclerView dList;
+    private Button button1, button2;
+    private String lid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,11 +88,15 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
             @Override
             public void onClick(View view) {
                 System.out.println("testing ---> start scanning");
+
                 if (bThread != null)
                     bThread.cancel();
                 dAdapter.reset();
-                sts.setText("");
+                sts.setText("Scanning...");
                 bta.startDiscovery();
+                info.setVisibility(View.INVISIBLE);
+                button1.setVisibility(View.INVISIBLE);
+                button2.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -99,6 +105,9 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
         wifi = findViewById(R.id.wifi);
         signed = findViewById(R.id.signed);
         wifiCheck = findViewById(R.id.wifiCheck);
+        info = findViewById(R.id.info);
+        button1 = findViewById(R.id.button1);
+        button2 = findViewById(R.id.button2);
     }
 
     @Override
@@ -131,53 +140,140 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
 
     @Override
     public void connect(BluetoothDevice device) {
+        if (bThread != null)
+            bThread.cancel();
+        button1.setVisibility(View.INVISIBLE);
+        button2.setVisibility(View.INVISIBLE);
         System.out.println("testing --> connecting to: " + device.getAddress());
+        sts.setText("Connecting...");
         bThread = new BlueThread(device, this);
-        System.out.println("testing ---? flg");
         bThread.start();
+        info.setVisibility(View.VISIBLE);
     }
-
 
     @Override
     public void updateUi(int status, String msg) {
         switch (status) {
             case DISCONNECT:
                 sts.setText("Disconnect");
-                bThread.cancel();
+                id.setText("");
+                wifi.setText("");
+                signed.setChecked(false);
+                wifiCheck.setChecked(false);
+                info.setVisibility(View.INVISIBLE);
+                button1.setVisibility(View.INVISIBLE);
+                button2.setVisibility(View.INVISIBLE);
                 break;
             case CONNECTING:
-                sts.setText("Connecting...");
-                break;
-            case CONNECTED:
-                sts.setText("Connected");
-                bThread.write((GET_LID + "").getBytes(), GET_LID);
-                sts.setText("Getting Lock details...");
+                System.out.println("testing ---> CONNECTING CASE: " + msg + ".");
+                if (!msg.equalsIgnoreCase("SYNC"))
+                    bThread.write("1", CONNECTING);
+                else {
+                    //   sts.setText("Connected");
+                    bThread.write(GET_LID + "", GET_LID);
+                    sts.setText("Getting Lock details...");
+                    info.setVisibility(View.INVISIBLE);
+                }
                 break;
             case GET_LID:
                 System.out.println("testing ---> GET_LID reply");
                 id.setText(msg);
                 FireBase.searchGeneralLock(msg, this);
                 sts.setText("Getting WIFI status...");
-                bThread.write((GET_SSID + "").getBytes(), GET_SSID);
+                bThread.write(GET_SSID + "", GET_SSID);
                 break;
             case GET_SSID:
                 wifi.setText(msg);
-                bThread.write((GET_WIFI + "").getBytes(), GET_WIFI);
+                lid = msg;
+                bThread.write(GET_WIFI + "", GET_WIFI);
                 break;
             case GET_WIFI:
                 System.out.println("testing ---> GET_WIFI msg: " + msg);
                 wifiCheck.setChecked(msg.equalsIgnoreCase("1"));
+                sts.setText("Connected");
+                button1.setVisibility((button1.getText().length() > 0) ? View.VISIBLE : View.INVISIBLE);
+                button2.setVisibility((button2.getText().length() > 0) ? View.VISIBLE : View.INVISIBLE);
                 break;
         }
     }
 
     @Override
-    public void found(House house, Lock lock) {
+    public void found(final House house, final Lock lock) {
         signed.setChecked(true);
+        button2.setText("");
+        if (FireBase.findLockInList(lock.id)) {
+            System.out.println("testing ---> signed to this lock " + lock.id);
+            if (lock.admin.contains(FireBase.getUid())) {
+                button1.setText("SET WIFI");
+                button1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        setWfi();
+                    }
+                });
+                button1.setText("");
+//                button1.setVisibility(View.VISIBLE);
+            }
+        } else {
+            if (!lock.notAdmin.contains(FireBase.getUid())) {
+                button1.setText("ADD LOCK");
+                button1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        add(house, lock);
+                    }
+                });
+            } else {
+                button1.setText("");
+            }
+        }
     }
 
     @Override
     public void notFound(String lId) {
         signed.setChecked(false);
+        button1.setText("SET WIFI");
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setWfi();
+            }
+        });
+
+        button2.setText("ACTIVATE LOCK");
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activate();
+            }
+        });
+    }
+
+    private void setWfi() {
+        Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
+        intent.putExtra("status", 5);
+        startActivity(intent);
+    }
+
+    private void add(House house, Lock lock) {
+        Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
+        intent.putExtra("status", 2);
+        intent.putExtra("houseName", house.name);
+        intent.putExtra("lockName", lock.name);
+        intent.putExtra("lockId", lock.id);
+        intent.putExtra("lockAdmins", lock.admin);
+        startActivity(intent);
+//        finish();
+//        Toast.makeText(this, "add()", Toast.LENGTH_SHORT).show();
+    }
+
+    private void activate() {
+        Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
+        intent.putExtra("status", 3);
+        intent.putExtra("houseName", "New House");
+        intent.putExtra("houseId", lid);
+        startActivity(intent);
+//        finish();
+//        Toast.makeText(this, "active()", Toast.LENGTH_SHORT).show();
     }
 }
