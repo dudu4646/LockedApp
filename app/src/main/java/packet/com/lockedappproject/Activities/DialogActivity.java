@@ -46,6 +46,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
     private ImageView img;
     private Spinner spinner;
     private WifiManager wifiManager;
+    BroadcastReceiver wifiScanReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -280,7 +281,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
             case 5:
                 wifiLayout.setVisibility(View.VISIBLE);
                 wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
+                wifiScanReceiver = new BroadcastReceiver() {
                     @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
                     public void onReceive(Context c, Intent intent) {
@@ -374,5 +375,12 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
     @Override
     public void notFound(String lId) {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (wifiScanReceiver != null)
+            unregisterReceiver(wifiScanReceiver);
     }
 }

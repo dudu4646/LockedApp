@@ -191,6 +191,7 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
                 System.out.println("testing ---> GET_WIFI msg: " + msg);
                 wifiCheck.setChecked(msg.equalsIgnoreCase("1"));
                 sts.setText("Connected");
+                System.out.println("testing ---> button 1: " + button1.getText().length());
                 button1.setVisibility((button1.getText().length() > 0) ? View.VISIBLE : View.INVISIBLE);
                 button2.setVisibility((button2.getText().length() > 0) ? View.VISIBLE : View.INVISIBLE);
                 break;
@@ -211,7 +212,6 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
                         setWfi();
                     }
                 });
-                button1.setText("");
 //                button1.setVisibility(View.VISIBLE);
             }
         } else {
