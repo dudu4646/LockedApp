@@ -8,6 +8,8 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class BlueThread extends Thread {
@@ -48,30 +50,55 @@ public class BlueThread extends Thread {
             final Activity activity = (Activity) cb;
 
             socket.connect();
+            sleep(50);
+            while (!socket.isConnected()) ;
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    cb.updateUi(ThreadCB.CONNECTING, "");
+                    cb.updateUi(ThreadCB.CONNECTING, null);
                 }
             });
+//            write("5",ThreadCB.GET_NET);
             System.out.println("testing ---> starting read loop");
             while (true) {
                 try {
-                    int numBytes;
-                    numBytes = inStream.read();
-                    System.out.println("testing ---> incoming total length = " + numBytes);
-                    buffer = new byte[numBytes];
-                    for (int i = 0; i < numBytes; i++)
-                        buffer[i] = (byte) inStream.read();
-                    System.out.println("testing ---> incoming msg = " + new String(buffer));
+//                    int numBytes;
+//                    numBytes = inStream.read();
+//                    System.out.println("testing ---> incoming total length = " + numBytes);
+//                    buffer = new byte[numBytes];
+//                    for (int i = 0; i < numBytes; i++)
+//                        buffer[i] = (byte) inStream.read();
+//                    System.out.println("testing ---> incoming msg = " + new String(buffer));
+//
+//
+//                    activity.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            cb.updateUi(status, new String(buffer));
+//                        }
+//                    });
 
-
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            cb.updateUi(status, new String(buffer));
-                        }
-                    });
+                    int numBytes, numParts;
+                    final List<String> msg = new ArrayList<>();
+                    numParts = inStream.read();
+                    System.out.println("testing ---> total parts: " + numParts);
+                    for (int i = 0; i < numParts; i++) {
+                        System.out.println("testing ---> part " + (i + 1) + ":");
+                        numBytes = inStream.read();
+                        System.out.println("testing ---> bytes: " + numBytes);
+                        final char[] buffer = new char[numBytes];
+                        for (int j = 0; j < numBytes; j++)
+                            buffer[j] = (char) inStream.read();
+                        String str = new String(buffer, 0, numBytes);
+                        System.out.println("testing ---> ssid (" + (i + 1) + "): " + str);
+                        msg.add(str);
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                cb.updateUi(status, msg);
+                            }
+                        });
+                    }
 
                 } catch (IOException e) {
                     System.out.println("testing ---> read loop ended");
@@ -84,6 +111,8 @@ public class BlueThread extends Thread {
             } catch (IOException ex) {
                 Log.e(TAG, "failed to close socket ", ex);
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         } finally {
             cancel();
         }
@@ -106,7 +135,7 @@ public class BlueThread extends Thread {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                cb.updateUi(ThreadCB.DISCONNECT, "");
+                cb.updateUi(ThreadCB.DISCONNECT, null);
             }
         });
         System.out.println("testing ---> cancel called");
@@ -126,10 +155,13 @@ public class BlueThread extends Thread {
         static int GET_LID = 2;
         static int GET_SSID = 3;
         static int GET_WIFI = 4;
-        static int SET_SSID = 5;
-        static int SET_PASS = 6;
+        static int GET_NET = 5;
+        static int SET_NET = 6;
+        static int SET_PASS = 7;
+        static int RECONNECT = 8;
 
-        void updateUi(int status, String msg);
+        void updateUi(int status, List<String> msg);
+
     }
 }
 

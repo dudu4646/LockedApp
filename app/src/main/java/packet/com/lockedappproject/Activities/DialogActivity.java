@@ -1,12 +1,7 @@
 package packet.com.lockedappproject.Activities;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Typeface;
-import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,21 +16,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.House;
 import packet.com.lockedappproject.models.Lock;
-import packet.com.lockedappproject.models.User;
-
-import static android.net.wifi.WifiManager.EXTRA_RESULTS_UPDATED;
 
 public class DialogActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, FireBase.FindLock {
 
@@ -44,9 +37,8 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
     private TextView header;
     private EditText addHouseName, addHouseCity, addHouseAddress, newLockName;
     private ImageView img;
-    private Spinner spinner;
-    private WifiManager wifiManager;
-    BroadcastReceiver wifiScanReceiver;
+    private Spinner spinner, netSpin;
+    private TextInputEditText netPass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +67,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
         //ImageView
         img = findViewById(R.id.img);
         //Spinner
+        netSpin = findViewById(R.id.netSpin);
         spinner = findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(this);
 
@@ -233,7 +226,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
                 break;
             //new lock
             case 3:
-                User user = FireBase.getUser();
+//                User user = FireBase.getUser();
                 ArrayList<String> arr = new ArrayList<>();
                 arr.add("New House");
                 ArrayList<House> houses = FireBase.getHouses();
@@ -279,43 +272,28 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
                 });
                 break;
             case 5:
+                netPass = findViewById(R.id.netPass);
+                ArrayList<String> net = new ArrayList<>(Arrays.asList(getIntent().getStringExtra("net").split("<!>")));
+                ArrayAdapter<String> netAdapt = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, net);
+                netSpin.setAdapter(netAdapt);
+                netSpin.setSelection(0);
+                header.setText("Set Network");
+                img.setImageResource(R.drawable.wifi);
                 wifiLayout.setVisibility(View.VISIBLE);
-                wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                wifiScanReceiver = new BroadcastReceiver() {
-                    @RequiresApi(api = Build.VERSION_CODES.M)
+
+                ok.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onReceive(Context c, Intent intent) {
-                        boolean success = intent.getBooleanExtra(
-                                EXTRA_RESULTS_UPDATED, false);
-                        if (success) {
-                            scanSuccess();
-                        } else {
-                            scanFailure();
-                        }
+                    public void onClick(View view) {
+                        Intent intent = new Intent();
+                        intent.putExtra("pass", (((netPass.getText() == null) || netPass.getText().toString().length() == 0)) ? "" : netPass.getText().toString());
+                        setResult(netSpin.getSelectedItemPosition() + 1, intent);
+                        finish();
                     }
-                };
-                IntentFilter intentFilter = new IntentFilter();
-                intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-                getApplication().registerReceiver(wifiScanReceiver, intentFilter);
-
-                boolean success = wifiManager.startScan();
-                if (!success) {
-                    scanFailure();
-                }
-
-                if (wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED)
-                    Toast.makeText(this, "turn WIFI on", Toast.LENGTH_SHORT).show();
+                });
                 break;
         }
     }
 
-    private void scanSuccess() {
-        Toast.makeText(this, "scanSuccess()", Toast.LENGTH_SHORT).show();
-    }
-
-    private void scanFailure() {
-        Toast.makeText(this, "scanFailure", Toast.LENGTH_SHORT).show();
-    }
 
     private boolean checkData() {
         boolean name = (newLockName.getError() == null && newLockName.getText().length() > 0);
@@ -377,10 +355,4 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (wifiScanReceiver != null)
-            unregisterReceiver(wifiScanReceiver);
-    }
 }

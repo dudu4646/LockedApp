@@ -617,6 +617,18 @@ public class FireBase {
         return false;
     }
 
+    //build string from list (sort + adding ",")
+    public static String buildStringFromList(List<String> list, String split) {
+        Collections.sort(list);
+        String s = "";
+        for (int i = 0; i < list.size(); i++)
+            if (i == 0)
+                s = list.get(i);
+            else
+                s += split + list.get(i);
+        return s;
+    }
+
     //PRIVATE METHODS:
     //add id to string
     private static String add_id_to_string(String src, String id) {
