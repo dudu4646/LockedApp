@@ -284,9 +284,10 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
                 ok.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent();
-                        intent.putExtra("pass", (((netPass.getText() == null) || netPass.getText().toString().length() == 0)) ? "" : netPass.getText().toString());
-                        setResult(netSpin.getSelectedItemPosition() + 1, intent);
+                        Intent data = new Intent();
+                        data.putExtra("pass", (((netPass.getText() == null) || netPass.getText().toString().length() == 0)) ? "" : netPass.getText().toString());
+                        setResult(netSpin.getSelectedItemPosition() + 1, data);
+                        System.out.println("testing ---> pass = ." + netPass.getText().toString() + ".");
                         finish();
                     }
                 });

@@ -158,7 +158,7 @@ public class BlueThread extends Thread {
         static int GET_NET = 5;
         static int SET_NET = 6;
         static int SET_PASS = 7;
-        static int RECONNECT = 8;
+        static int RECONNECTING = 8;
 
         void updateUi(int status, List<String> msg);
 

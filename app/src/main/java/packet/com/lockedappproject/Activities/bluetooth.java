@@ -24,7 +24,6 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -49,6 +48,7 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
     private Button button1, button2;
     private String lid, pass, ssid;
     private ArrayList<String> network;
+    private int test = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +129,7 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode != 5) {
             if (!bta.isEnabled()) {
                 Toast.makeText(this, "We need Bluetooth to connect with the lock :/", Toast.LENGTH_SHORT).show();
@@ -136,11 +137,11 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
             }
         } else {
             if (resultCode > 0) {
-                pass = getIntent().getStringExtra("pass");
+                pass = data.getStringExtra("pass");
                 pass = (pass == null) ? "" : pass;
                 ssid = network.get(resultCode - 1);
-                Toast.makeText(this, pass.length() + "!", Toast.LENGTH_SHORT).show();
-                bThread.write(SET_NET + "", SET_NET);
+                sts.setText("Setting WIFI...");
+                bThread.write(SET_NET + ssid, SET_NET);
             } else
                 pass = ssid = null;
         }
@@ -162,7 +163,6 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
             bThread.cancel();
         button1.setVisibility(View.INVISIBLE);
         button2.setVisibility(View.INVISIBLE);
-        System.out.println("testing --> connecting to: " + device.getAddress());
         sts.setText("Connecting...");
         bThread = new BlueThread(device, this);
         bThread.start();
@@ -184,7 +184,6 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
                 button2.setVisibility(View.INVISIBLE);
                 break;
             case CONNECTING:
-                System.out.println("testing ---> CONNECTING CASE");
                 if (msg == null || !msg.get(0).equalsIgnoreCase("SYNC"))
                     bThread.write("1", CONNECTING);
                 else {
@@ -195,7 +194,6 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
                 }
                 break;
             case GET_LID:
-                System.out.println("testing ---> GET_LID reply");
                 id.setText(msg.get(0));
                 FireBase.searchGeneralLock(msg.get(0), this);
                 sts.setText("Getting WIFI status...");
@@ -207,7 +205,6 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
                 bThread.write(GET_WIFI + "", GET_WIFI);
                 break;
             case GET_WIFI:
-                System.out.println("testing ---> GET_WIFI msg: " + msg);
                 wifiCheck.setChecked(msg.get(0).equalsIgnoreCase("1"));
                 if (button1.getText().toString().equalsIgnoreCase("SET WIFI")) {
                     sts.setText("Scanning networks...");
@@ -216,23 +213,39 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
                 break;
             case GET_NET:
                 network = new ArrayList<>(msg);
-                System.out.println("testing ---> GET_NET case, network size = " + network.size());
                 sts.setText("Connected");
                 button1.setVisibility((button1.getText().length() > 0) ? View.VISIBLE : View.INVISIBLE);
                 button2.setVisibility((button2.getText().length() > 0) ? View.VISIBLE : View.INVISIBLE);
                 break;
             case SET_NET:
-                sts.setText("Sending WIFI");
-                bThread.write(ssid, SET_PASS);
+                System.out.println("testing ---> ssid = " + ssid + ", income = " + msg.get(0) + ", test = " + test);
+                if (msg.get(0).equalsIgnoreCase(ssid))
+                    bThread.write(SET_PASS + pass, SET_PASS);
+                else {
+                    if ((test++) < 3)
+                        bThread.write(ssid, SET_PASS);
+                    else {
+                        Snackbar.make(button1, "Something wrong, try to set WIFI again...", Snackbar.LENGTH_SHORT).show();
+                    }
+                }
+                test = 0;
                 break;
             case SET_PASS:
-//                sts.setText("Sending Pass...");
-                bThread.write(pass, RECONNECT);
+                System.out.println("testing ---> pass = " + pass + ", income = " + msg.get(0) + ", test = " + test);
+                if (msg.get(0).equalsIgnoreCase(pass)) {
+                    bThread.write(RECONNECTING + "", RECONNECTING);
+                } else {
+                    if ((test++) < 3)
+                        bThread.write(SET_PASS + pass, SET_PASS);
+                    else {
+                        Snackbar.make(button1, "Something wrong, try to set WIFI again...", Snackbar.LENGTH_LONG).show();
+                    }
+                }
+                test = 0;
                 break;
-            case RECONNECT:
-                Snackbar.make(button1, "Reconnect to lock to check the WIFI", BaseTransientBottomBar.LENGTH_SHORT).show();
-                scan.performClick();
-                break;
+            case RECONNECTING:
+                Snackbar.make(button1, "Reconnect to check WIFI...", Snackbar.LENGTH_LONG).show();
+                bThread.cancel();
         }
     }
 
@@ -241,7 +254,6 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
         signed.setChecked(true);
         button2.setText("");
         if (FireBase.findLockInList(lock.id)) {
-            System.out.println("testing ---> signed to this lock " + lock.id);
             if (lock.admin.contains(FireBase.getUid())) {
                 button1.setText("SET WIFI");
                 button1.setOnClickListener(new View.OnClickListener() {
@@ -296,7 +308,6 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
             Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
             intent.putExtra("status", 5);
             intent.putExtra("net", net);
-            System.out.println("testing ---> net = " + net);
             startActivityForResult(intent, 5);
         }
     }
@@ -309,8 +320,6 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
         intent.putExtra("lockId", lock.id);
         intent.putExtra("lockAdmins", lock.admin);
         startActivity(intent);
-//        finish();
-//        Toast.makeText(this, "add()", Toast.LENGTH_SHORT).show();
     }
 
     private void activate() {
@@ -319,7 +328,5 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
         intent.putExtra("houseName", "New House");
         intent.putExtra("houseId", lid);
         startActivity(intent);
-//        finish();
-//        Toast.makeText(this, "active()", Toast.LENGTH_SHORT).show();
     }
 }
