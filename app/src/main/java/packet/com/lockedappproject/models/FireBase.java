@@ -101,10 +101,7 @@ public class FireBase {
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
             House house = dataSnapshot.getValue(House.class);
-            System.out.println("testing ---> new house added: " + house.name + ", " + house.id);
-            System.out.println("testing ---> user house list: " + user.nick + ", " + user.houseList);
             if (user.houseList.contains(house.id) && !house.id.equalsIgnoreCase("")) {
-                System.out.println("testing ---> in!!!");
                 userHouses.add(house);
                 Collections.sort(userHouses);
                 for (UpdateHouseData u : updateHouse) {
@@ -173,15 +170,15 @@ public class FireBase {
 
         @Override
         public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            if (requests.containsKey(dataSnapshot.getKey())) {
-                Req r = dataSnapshot.getValue(Req.class);
-                if (!r.getToUsers().contains(getUid()))
+            Req r = dataSnapshot.getValue(Req.class);
+            if (r.getToUsers().contains(getUid()))
+                requests.put(dataSnapshot.getKey(), r);
+            else if (requests.containsKey(dataSnapshot.getKey()))
                     requests.remove(dataSnapshot.getKey());
-                for (UpdateRequests u : updateRequests) {
-                    u.Notify(requests.size());
-                }
-            }
+            for (UpdateRequests u : updateRequests)
+                u.Notify(requests.size());
         }
+
 
         @Override
         public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
@@ -543,19 +540,25 @@ public class FireBase {
     }
 
     //adding req to DB
-    public static void AddReq(House house, final Lock lock) {
+    public static void AddReq(final House house, final Lock lock) {
         boolean flg = false;
         reqRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int i;
+                boolean flg = true;
                 Iterator it = dataSnapshot.getChildren().iterator();
                 while (it.hasNext()) {
                     DataSnapshot ds = (DataSnapshot) it.next();
                     Req req = ds.getValue(Req.class);
-                    if (req.getLockId().equalsIgnoreCase(lock.id) && req.getFromUser().equalsIgnoreCase(getUid()))
-                        reqRef.child(ds.getKey()).removeValue();
+                    if (req.getLockId().equalsIgnoreCase(lock.id) && req.getFromUser().equalsIgnoreCase(getUid())) {
+                        reqRef.child(ds.getKey()).setValue(new Req(lock.id, house.id, getUid(), lock.admin));
+                        flg = false;
+                        break;
+                    }
                 }
+                if (flg)
+                    reqRef.push().setValue(new Req(lock.id, house.id, getUid(), lock.admin));
             }
 
             @Override
@@ -563,7 +566,7 @@ public class FireBase {
 
             }
         });
-        reqRef.push().setValue(new Req(lock.id, house.id, getUid(), lock.admin));
+//        reqRef.push().setValue(new Req(lock.id, house.id, getUid(), lock.admin));
     }
 
     //updating ReqNum text

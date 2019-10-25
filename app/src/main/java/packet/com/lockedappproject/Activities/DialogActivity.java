@@ -220,13 +220,13 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
                     public void onClick(View view) {
                         Toast.makeText(DialogActivity.this, "Request was sent to the lock Admins", Toast.LENGTH_SHORT).show();
                         FireBase.searchGeneralLock(getIntent().getStringExtra("lockId"), DialogActivity.this);
+                        setResult(1);
                         finish();
                     }
                 });
                 break;
             //new lock
             case 3:
-//                User user = FireBase.getUser();
                 ArrayList<String> arr = new ArrayList<>();
                 arr.add("New House");
                 ArrayList<House> houses = FireBase.getHouses();
@@ -244,8 +244,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
                     public void onClick(View view) {
                         if (checkData()) {
                             addLock(spinner.getSelectedItemPosition());
-                            Intent intent = new Intent();
-                            setResult(1, intent);
+                            setResult(1);
                             finish();
                         } else
                             Snackbar.make(ok, "There's some data missing...", Snackbar.LENGTH_SHORT).setAnimationMode(Snackbar.ANIMATION_MODE_FADE).show();
@@ -271,6 +270,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
                     }
                 });
                 break;
+            //Set Wifi
             case 5:
                 netPass = findViewById(R.id.netPass);
                 ArrayList<String> net = new ArrayList<>(Arrays.asList(getIntent().getStringExtra("net").split("<!>")));

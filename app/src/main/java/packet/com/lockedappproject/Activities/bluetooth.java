@@ -130,30 +130,48 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode != 5) {
-            if (!bta.isEnabled()) {
-                Toast.makeText(this, "We need Bluetooth to connect with the lock :/", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        } else {
-            if (resultCode > 0) {
-                pass = data.getStringExtra("pass");
-                pass = (pass == null) ? "" : pass;
-                ssid = network.get(resultCode - 1);
-                sts.setText("Setting WIFI...");
-                bThread.write(SET_NET + ssid, SET_NET);
-            } else
-                pass = ssid = null;
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(receiver);
-        try {
-            bThread.cancel();
-        } catch (Exception e) {
+//        if (requestCode != 5) {
+//            if (!bta.isEnabled()) {
+//                Toast.makeText(this, "We need Bluetooth to connect with the lock :/", Toast.LENGTH_SHORT).show();
+//                finish();
+//            }
+//        } else {
+//            if (resultCode > 0) {
+//                pass = data.getStringExtra("pass");
+//                pass = (pass == null) ? "" : pass;
+//                ssid = network.get(resultCode - 1);
+//                sts.setText("Setting WIFI...");
+//                bThread.write(SET_NET + ssid, SET_NET);
+//            } else
+//                pass = ssid = null;
+//        }
+        System.out.println("testing ---> code = " + requestCode + ", code = " + resultCode);
+        switch (requestCode) {
+            case 1:
+                if (!bta.isEnabled()) {
+                    Toast.makeText(this, "We need Bluetooth to connect with the lock :/", Toast.LENGTH_SHORT).show();
+                    finish();
+                    break;
+                }
+                break;
+            case 2:
+                if (resultCode > 0) {
+                    pass = data.getStringExtra("pass");
+                    pass = (pass == null) ? "" : pass;
+                    ssid = network.get(resultCode - 1);
+                    sts.setText("Setting WIFI...");
+                    bThread.write(SET_NET + ssid, SET_NET);
+                } else
+                    pass = ssid = null;
+                break;
+            case 3:
+                if (resultCode == 1)
+                    button2.setVisibility(View.INVISIBLE);
+                break;
+            case 4:
+                if (resultCode == 1)
+                    button1.setVisibility(View.INVISIBLE);
+                break;
         }
     }
 
@@ -195,13 +213,13 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
                 break;
             case GET_LID:
                 id.setText(msg.get(0));
+                lid = msg.get(0);
                 FireBase.searchGeneralLock(msg.get(0), this);
                 sts.setText("Getting WIFI status...");
                 bThread.write(GET_SSID + "", GET_SSID);
                 break;
             case GET_SSID:
                 wifi.setText(msg.get(0));
-                lid = msg.get(0);
                 bThread.write(GET_WIFI + "", GET_WIFI);
                 break;
             case GET_WIFI:
@@ -209,6 +227,9 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
                 if (button1.getText().toString().equalsIgnoreCase("SET WIFI")) {
                     sts.setText("Scanning networks...");
                     bThread.write("5", GET_NET);
+                } else {
+                    sts.setText("Connected");
+                    button1.setVisibility((button1.getText().length() > 0) ? View.VISIBLE : View.INVISIBLE);
                 }
                 break;
             case GET_NET:
@@ -308,7 +329,7 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
             Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
             intent.putExtra("status", 5);
             intent.putExtra("net", net);
-            startActivityForResult(intent, 5);
+            startActivityForResult(intent, 2);
         }
     }
 
@@ -319,7 +340,7 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
         intent.putExtra("lockName", lock.name);
         intent.putExtra("lockId", lock.id);
         intent.putExtra("lockAdmins", lock.admin);
-        startActivity(intent);
+        startActivityForResult(intent, 4);
     }
 
     private void activate() {
@@ -327,6 +348,16 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
         intent.putExtra("status", 3);
         intent.putExtra("houseName", "New House");
         intent.putExtra("houseId", lid);
-        startActivity(intent);
+        startActivityForResult(intent, 3);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
+        try {
+            bThread.cancel();
+        } catch (Exception e) {
+        }
     }
 }
