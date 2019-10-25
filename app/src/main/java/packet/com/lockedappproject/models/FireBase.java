@@ -37,6 +37,19 @@ public class FireBase {
     private static ArrayList<UpdateHouseData> updateHouse = new ArrayList<>();
     private static ArrayList<UpdateLockData> updateLocks = new ArrayList<>();
     private static ArrayList<UpdateRequests> updateRequests = new ArrayList<>();
+    //LISTENERS:
+    private static ValueEventListener userListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            user = dataSnapshot.getValue(User.class);
+            download();
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
     private static ChildEventListener lockListener = new ChildEventListener() {
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -199,19 +212,6 @@ public class FireBase {
 
         }
     };
-    //LISTENERS:
-    private static ValueEventListener userListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            user = dataSnapshot.getValue(User.class);
-            download();
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
-    };
 
     //GETTERS:
     //get current user
@@ -335,7 +335,7 @@ public class FireBase {
         reqRef.addChildEventListener(reqListener);
     }
 
-    //download all the users users
+    //download all the users
     public static void getNicks() {
         users = new HashMap<>();
         ref = db.getReference("users");
@@ -487,6 +487,14 @@ public class FireBase {
         } else
             //מחיקת המשתמש מרשימת היוזרים הרגילים
             lock.notAdmin = remove_id_from_string(lock.notAdmin, getUid());
+
+        //מחיקת בקשות של אותו מנעול
+        for (String key : requests.keySet()) {
+            Req req = requests.get(key);
+            if (req.getLockId().equalsIgnoreCase(lock.name))
+                rjctReq(key);
+        }
+
         //מחיקת המנעול מהרשימה של המשתמש
         user.lockList = remove_id_from_string(user.lockList, lock.id);
 
