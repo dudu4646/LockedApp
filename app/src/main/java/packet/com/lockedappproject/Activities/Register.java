@@ -67,8 +67,13 @@ public class Register extends AppCompatActivity {
                         nick.setError("This field cannot be blank");
                         nickF = true;
                     } else {
-                        nick.setError(null);
-                        nickF = false;
+                        if (FireBase.checkNick(nick.getText().toString())) {
+                            nick.setError("This nick already taken");
+                            nickF = true;
+                        } else {
+                            nick.setError(null);
+                            nickF = false;
+                        }
                     }
             }
         });

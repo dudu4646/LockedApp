@@ -192,7 +192,6 @@ public class FireBase {
                 u.Notify(requests.size());
         }
 
-
         @Override
         public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
             if (requests.containsKey(dataSnapshot.getKey()))
@@ -513,16 +512,15 @@ public class FireBase {
 
         //עדכון או מחיקת המנעול
         if (dltLock) {
-            chkReq(lock);
+//            chkReq(lock);
             db.getReference("locks").child(lock.id).removeValue();
         } else
             db.getReference("locks").child(lock.id).setValue(lock);
 
         //עדכון או מחיקת הבית
-        if (dltHouse) {
+        if (dltHouse)
             db.getReference("house").child(house.id).removeValue();
-            //    remove_H_from_other_users(house);
-        } else
+        else
             db.getReference("house").child(house.id).setValue(house);
 
         //עדכון המשתמש
@@ -621,6 +619,7 @@ public class FireBase {
             reqRef.child(reqId).setValue(req);
     }
 
+    //checking if user signed to lock
     public static boolean findLockInList(String id) {
         for (Lock l : userLocks)
             if (l.id.equalsIgnoreCase(id))
@@ -639,6 +638,7 @@ public class FireBase {
                 s += split + list.get(i);
         return s;
     }
+
 
     //PRIVATE METHODS:
     //add id to string
