@@ -33,12 +33,6 @@ public class Register extends AppCompatActivity {
     private Button signUp, goBack;
     private boolean nickF, emailF, passF, reF;
     private FirebaseAuth auth;
-//    private ArrayList<String> nicks;
-
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +113,7 @@ public class Register extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if ((s.toString().length() >= pass.getText().toString().length()) &&
+                if ((s.toString().length() != pass.getText().toString().length()) &&
                         (!s.toString().equals(pass.getText().toString()))) {
                     repass.setError("password isn't match");
                     reF = true;

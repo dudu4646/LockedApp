@@ -21,7 +21,6 @@ public class BlueThread extends Thread {
     private final InputStream inStream;
     private final OutputStream outStream;
     private final Activity activity;
-    private byte[] buffer;
     private ThreadCB cb;
     private int status;
 
@@ -58,26 +57,9 @@ public class BlueThread extends Thread {
                     cb.updateUi(ThreadCB.CONNECTING, null);
                 }
             });
-//            write("5",ThreadCB.GET_NET);
             System.out.println("testing ---> starting read loop");
             while (true) {
                 try {
-//                    int numBytes;
-//                    numBytes = inStream.read();
-//                    System.out.println("testing ---> incoming total length = " + numBytes);
-//                    buffer = new byte[numBytes];
-//                    for (int i = 0; i < numBytes; i++)
-//                        buffer[i] = (byte) inStream.read();
-//                    System.out.println("testing ---> incoming msg = " + new String(buffer));
-//
-//
-//                    activity.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            cb.updateUi(status, new String(buffer));
-//                        }
-//                    });
-
                     int numBytes, numParts;
                     final List<String> msg = new ArrayList<>();
                     numParts = inStream.read();
@@ -165,12 +147,4 @@ public class BlueThread extends Thread {
     }
 }
 
-/*
-activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    cb.updateUi(ThreadCB.CONNECTED,1,1,"");
-                }
-            });
- */
 

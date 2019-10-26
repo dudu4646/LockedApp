@@ -21,7 +21,6 @@ public class AddLock extends AppCompatActivity implements FireBase.FindLock {
 
     private EditText lockId;
     private Button search;
-    private String toHouse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +67,6 @@ public class AddLock extends AppCompatActivity implements FireBase.FindLock {
             }
         });
 
-        toHouse = getIntent().getStringExtra("houseName");
     }
 
     @Override
@@ -85,12 +83,6 @@ public class AddLock extends AppCompatActivity implements FireBase.FindLock {
 
     @Override
     public void notFound(String lId) {
-//        Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
-//        intent.putExtra("status", 3);
-//        intent.putExtra("houseName",toHouse);
-//        intent.putExtra("houseId",lockId.getText().toString().trim());
-//        startActivity(intent);
-//        finish();
         Toast.makeText(this, "This Lock isn't Activated!", Toast.LENGTH_LONG).show();
     }
 }

@@ -63,7 +63,6 @@ public class BlueAdapter extends RecyclerView.Adapter<BlueAdapter.DeviceHolder> 
                 break;
             }
         devices.add(toAdd);
-        System.out.println("testing ---> adding new device");
         notifyDataSetChanged();
     }
 

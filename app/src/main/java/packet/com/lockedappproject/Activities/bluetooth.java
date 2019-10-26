@@ -130,21 +130,6 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-//        if (requestCode != 5) {
-//            if (!bta.isEnabled()) {
-//                Toast.makeText(this, "We need Bluetooth to connect with the lock :/", Toast.LENGTH_SHORT).show();
-//                finish();
-//            }
-//        } else {
-//            if (resultCode > 0) {
-//                pass = data.getStringExtra("pass");
-//                pass = (pass == null) ? "" : pass;
-//                ssid = network.get(resultCode - 1);
-//                sts.setText("Setting WIFI...");
-//                bThread.write(SET_NET + ssid, SET_NET);
-//            } else
-//                pass = ssid = null;
-//        }
         System.out.println("testing ---> code = " + requestCode + ", code = " + resultCode);
         switch (requestCode) {
             case 1:
@@ -205,7 +190,6 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
                 if (msg == null || !msg.get(0).equalsIgnoreCase("SYNC"))
                     bThread.write("1", CONNECTING);
                 else {
-                    //   sts.setText("Connected");
                     bThread.write(GET_LID + "", GET_LID);
                     sts.setText("Getting Lock details...");
                     info.setVisibility(View.INVISIBLE);
@@ -283,7 +267,6 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
                         setWifi();
                     }
                 });
-//                button1.setVisibility(View.VISIBLE);
             }
         } else {
             if (!lock.notAdmin.contains(FireBase.getUid())) {
