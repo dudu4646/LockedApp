@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -49,6 +50,7 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
     private String lid, pass, ssid;
     private ArrayList<String> network;
     private int test = 0;
+    private boolean write;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,9 +189,27 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
                 button2.setVisibility(View.INVISIBLE);
                 break;
             case CONNECTING:
-                if (msg == null || !msg.get(0).equalsIgnoreCase("SYNC"))
-                    bThread.write("1", CONNECTING);
+                if (msg == null || !msg.get(0).equalsIgnoreCase("SYNC")) {
+//                    bThread.write("1", CONNECTING);
+                    write = true;
+                    final Handler handler = new Handler();
+                    final Runnable task = new Runnable() {
+                        @Override
+                        public void run() {
+                            if (write) {
+                                System.out.println("testing ---> write in loop");
+                                bThread.write("1", CONNECTING);
+                                handler.postDelayed(this, 2000);
+                            } else {
+                                System.out.println("testing ---> stop loop");
+                                handler.removeCallbacksAndMessages(this);
+                            }
+                        }
+                    };
+                    handler.post(task);
+                }
                 else {
+                    write = false;
                     bThread.write(GET_LID + "", GET_LID);
                     sts.setText("Getting Lock details...");
                     info.setVisibility(View.INVISIBLE);

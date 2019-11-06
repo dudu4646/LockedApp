@@ -23,6 +23,7 @@ public class BlueThread extends Thread {
     private final Activity activity;
     private ThreadCB cb;
     private int status;
+    private boolean write = true;
 
     public BlueThread(BluetoothDevice device, ThreadCB cb) {
         this.cb = cb;
@@ -63,6 +64,7 @@ public class BlueThread extends Thread {
                     int numBytes, numParts;
                     final List<String> msg = new ArrayList<>();
                     numParts = inStream.read();
+                    write = false;
                     System.out.println("testing ---> total parts: " + numParts);
                     for (int i = 0; i < numParts; i++) {
                         System.out.println("testing ---> part " + (i + 1) + ":");
@@ -111,6 +113,33 @@ public class BlueThread extends Thread {
             cancel();
         }
     }
+
+/*
+    public void write(final String str, final int sts) {
+        write = true;
+        final Handler handler = new Handler();
+        final Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                if (write){
+                    byte[] msg = str.getBytes();
+                    try {
+                        status = sts;
+                        System.out.println("testing ---> outgoing status in runnable mode = " + sts + ", msg: " + new String(msg));
+                        outStream.write(msg);
+                        handler.postDelayed(this,2000);
+                    } catch (IOException e) {
+                        System.out.println("failed to send msg");
+                        cancel();
+                    }
+                }
+                else handler.removeCallbacksAndMessages(this);
+            }
+        };
+        handler.post(task);
+    }
+
+ */
 
     public void cancel() {
 
