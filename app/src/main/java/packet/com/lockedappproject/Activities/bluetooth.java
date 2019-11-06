@@ -147,7 +147,22 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
                     pass = (pass == null) ? "" : pass;
                     ssid = network.get(resultCode - 1);
                     sts.setText("Setting WIFI...");
-                    bThread.write(SET_NET + ssid, SET_NET);
+                    write = true;
+                    final Handler handler = new Handler();
+                    final Runnable task = new Runnable() {
+                        @Override
+                        public void run() {
+                            if (write) {
+                                System.out.println("testing ---> write in loop");
+                                bThread.write(SET_NET + ssid, SET_NET);
+                                handler.postDelayed(this, 2000);
+                            } else {
+                                System.out.println("testing ---> stop loop");
+                                handler.removeCallbacksAndMessages(this);
+                            }
+                        }
+                    };
+                    handler.post(task);
                 } else
                     pass = ssid = null;
                 break;
@@ -243,6 +258,7 @@ public class bluetooth extends AppCompatActivity implements BlueAdapter.BlueCB, 
                 button2.setVisibility((button2.getText().length() > 0) ? View.VISIBLE : View.INVISIBLE);
                 break;
             case SET_NET:
+                write = false;
                 System.out.println("testing ---> ssid = " + ssid + ", income = " + msg.get(0) + ", test = " + test);
                 if (msg.get(0).equalsIgnoreCase(ssid))
                     bThread.write(SET_PASS + pass, SET_PASS);
