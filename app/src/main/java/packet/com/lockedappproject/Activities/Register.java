@@ -1,8 +1,6 @@
 package packet.com.lockedappproject.Activities;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -11,6 +9,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -18,25 +20,19 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.User;
-import packet.com.lockedappproject.models.userNick;
 
 public class Register extends AppCompatActivity {
 
     private static final String TAG = "Register";
 
     private EditText nick, email, pass, repass;
-    private Button signUp;
+    private Button signUp, goBack;
     private boolean nickF, emailF, passF, reF;
     private FirebaseAuth auth;
-//    private ArrayList<String> nicks;
-
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +45,13 @@ public class Register extends AppCompatActivity {
         pass = findViewById(R.id.pass);
         repass = findViewById(R.id.repass);
         signUp = findViewById(R.id.signUp);
+        goBack = findViewById(R.id.goBack);
+        goBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         nickF = emailF = passF = reF = true;
         nick.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -58,8 +61,13 @@ public class Register extends AppCompatActivity {
                         nick.setError("This field cannot be blank");
                         nickF = true;
                     } else {
-                        nick.setError(null);
-                        nickF = false;
+                        if (FireBase.checkNick(nick.getText().toString())) {
+                            nick.setError("This nick already taken");
+                            nickF = true;
+                        } else {
+                            nick.setError(null);
+                            nickF = false;
+                        }
                     }
             }
         });
@@ -105,7 +113,7 @@ public class Register extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if ((s.toString().length() >= pass.getText().toString().length()) &&
+                if ((s.toString().length() != pass.getText().toString().length()) &&
                         (!s.toString().equals(pass.getText().toString()))) {
                     repass.setError("password isn't match");
                     reF = true;

@@ -207,7 +207,7 @@
             android:layout_marginBottom="8dp"
             android:alpha="0"
             android:gravity="center"
-            android:text="User / Email:"
+            android:text="Nick / Email:"
             android:textAlignment="center"
             android:textSize="18sp"
             android:visibility="invisible"

@@ -1,22 +1,22 @@
 package packet.com.lockedappproject.Activities;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.snackbar.Snackbar;
 
-import org.w3c.dom.Text;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import packet.com.lockedappproject.Adapters.HouseScreenAdapt;
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
@@ -163,8 +163,10 @@ public class HouseScreen extends AppCompatActivity implements HouseScreenAdapt.I
             ;
         if (i < arr.size()) {
             tv.setTypeface(Typeface.DEFAULT);
+            tv.setTextSize(14);
             arr.remove(i);
         } else {
+            tv.setTextSize(18);
             tv.setTypeface(Typeface.DEFAULT_BOLD);
             arr.add(FireBase.getLockByStr(tv.getText().toString()));
         }

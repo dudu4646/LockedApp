@@ -20,24 +20,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import packet.com.lockedappproject.R;
 import packet.com.lockedappproject.models.FireBase;
 import packet.com.lockedappproject.models.House;
 import packet.com.lockedappproject.models.Lock;
-import packet.com.lockedappproject.models.User;
 
 public class DialogActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, FireBase.FindLock {
 
     private Button ok, cancel;
-    private ConstraintLayout takenLayout, foundLayout, newLockLayout, dltLockLayout, newHouseLayout;
+    private ConstraintLayout takenLayout, foundLayout, newLockLayout, dltLockLayout, newHouseLayout, wifiLayout;
     private TextView header;
     private EditText addHouseName, addHouseCity, addHouseAddress, newLockName;
     private ImageView img;
-    private Spinner spinner;
-//    private CheckBox checkBox;
+    private Spinner spinner, netSpin;
+    private TextInputEditText netPass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +61,16 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
         newLockLayout = findViewById(R.id.newLockLayout);
         dltLockLayout = findViewById(R.id.dltLockLayout);
         newHouseLayout = findViewById(R.id.newHouseLayout);
+        wifiLayout = findViewById(R.id.wifiLayout);
         //TextView
         header = findViewById(R.id.header);
         //ImageView
         img = findViewById(R.id.img);
         //Spinner
+        netSpin = findViewById(R.id.netSpin);
         spinner = findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(this);
-//        //CheckBox
-//        checkBox = findViewById(R.id.checkBox);
+
         //EditText
         addHouseName = findViewById(R.id.addHouseName);
         addHouseName.addTextChangedListener(new TextWatcher() {
@@ -218,13 +220,13 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
                     public void onClick(View view) {
                         Toast.makeText(DialogActivity.this, "Request was sent to the lock Admins", Toast.LENGTH_SHORT).show();
                         FireBase.searchGeneralLock(getIntent().getStringExtra("lockId"), DialogActivity.this);
+                        setResult(1);
                         finish();
                     }
                 });
                 break;
             //new lock
             case 3:
-                User user = FireBase.getUser();
                 ArrayList<String> arr = new ArrayList<>();
                 arr.add("New House");
                 ArrayList<House> houses = FireBase.getHouses();
@@ -242,8 +244,7 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
                     public void onClick(View view) {
                         if (checkData()) {
                             addLock(spinner.getSelectedItemPosition());
-                            Intent intent = new Intent();
-                            setResult(1, intent);
+                            setResult(1);
                             finish();
                         } else
                             Snackbar.make(ok, "There's some data missing...", Snackbar.LENGTH_SHORT).setAnimationMode(Snackbar.ANIMATION_MODE_FADE).show();
@@ -269,8 +270,31 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
                     }
                 });
                 break;
+            //Set Wifi
+            case 5:
+                netPass = findViewById(R.id.netPass);
+                ArrayList<String> net = new ArrayList<>(Arrays.asList(getIntent().getStringExtra("net").split("<!>")));
+                ArrayAdapter<String> netAdapt = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, net);
+                netSpin.setAdapter(netAdapt);
+                netSpin.setSelection(0);
+                header.setText("Set Network");
+                img.setImageResource(R.drawable.wifi);
+                wifiLayout.setVisibility(View.VISIBLE);
+
+                ok.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent data = new Intent();
+                        data.putExtra("pass", (((netPass.getText() == null) || netPass.getText().toString().length() == 0)) ? "" : netPass.getText().toString());
+                        setResult(netSpin.getSelectedItemPosition() + 1, data);
+                        System.out.println("testing ---> pass = ." + netPass.getText().toString() + ".");
+                        finish();
+                    }
+                });
+                break;
         }
     }
+
 
     private boolean checkData() {
         boolean name = (newLockName.getError() == null && newLockName.getText().length() > 0);
@@ -331,4 +355,5 @@ public class DialogActivity extends AppCompatActivity implements AdapterView.OnI
     public void notFound(String lId) {
 
     }
+
 }
